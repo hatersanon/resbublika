@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>РЕСПУБЛИКА — Онлайн-игра с открытым миром</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js for 3D Cyber Copper-Gold Web Sphere -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --gold-primary: #d97724;
+            --gold-light: #ffc885;
+            --gold-dark: #8c430e;
+            --gold-gradient: linear-gradient(135deg, #c8681e 0%, #ffd49b 25%, #a64f11 50%, #f7b267 75%, #8c430e 100%);
+            --gold-glow: rgba(217, 119, 36, 0.4);
+            --bg-dark: #050608;
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            position: relative;
+            width: 100%;
+            overflow-x: hidden;
+            background: var(--bg-dark);
+            line-height: 1.6;
+        }
+
+        /* 3D Canvas Fixed Background */
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Ambient Glow & Radial Vignette */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(217, 119, 36, 0.12) 0%, transparent 70%),
+                radial-gradient(circle at 50% 80%, rgba(5, 6, 8, 0.85) 0%, rgba(5, 6, 8, 0.95) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 6%;
+            background: rgba(5, 6, 8, 0.45);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-emblem {
+            width: 14px;
+            height: 14px;
+            background: var(--gold-gradient);
+            transform: rotate(45deg);
+            box-shadow: 0 0 15px var(--gold-primary);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 900;
+            letter-spacing: 5px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(217, 119, 36, 0.3);
+            white-space: nowrap;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-btn {
+            position: relative;
+            color: #fff;
+            text-decoration: none;
+            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-btn:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.35);
+            background: rgba(217, 119, 36, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Container Sections Layout */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 0 60px 0;
+            position: relative;
+        }
+
+        /* Glassmorphism iOS Style Cards */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(15, 18, 26, 0.35) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border-radius: 28px;
+            padding: clamp(25px, 5vw, 60px);
+            width: 100%;
+            max-width: 920px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(217, 119, 36, 0.08);
+            text-align: center;
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(217, 119, 36, 0.45);
+            box-shadow: 
+                0 35px 70px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                0 0 30px rgba(217, 119, 36, 0.2);
+        }
+
+        .glass-card:hover::after {
+            left: 100%;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: rgba(217, 119, 36, 0.15);
+            border: 1px solid rgba(217, 119, 36, 0.45);
+            color: var(--gold-light);
+            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(217, 119, 36, 0.2);
+        }
+
+        /* Responsive Headings */
+        .title-primary {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.2rem, 7vw, 5.2rem);
+            font-weight: 900;
+            letter-spacing: clamp(4px, 1.5vw, 12px);
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #ffffff 40%, rgba(255, 255, 255, 0.55) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
+        }
+
+        .title-gold {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+            line-height: 1.85;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin: 0 auto 40px auto;
+            max-width: 750px;
+        }
+
+        .description strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* Primary Download Button */
+        .btn-cta-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .btn-cta {
+            position: relative;
+            width: 100%;
+            padding: clamp(18px, 3vw, 24px) clamp(25px, 4vw, 45px);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #050608;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 35px rgba(217, 119, 36, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(217, 119, 36, 0.7);
+        }
+
+        .btn-cta:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Scroll Down Indicator */
+        .scroll-hint {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: bounce 2s infinite;
+            z-index: 90;
+            pointer-events: none;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .scroll-hint.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .scroll-arrow {
+            width: 18px;
+            height: 18px;
+            border-right: 2px solid var(--gold-primary);
+            border-bottom: 2px solid var(--gold-primary);
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+            40% { transform: translate(-50%, -10px); }
+            60% { transform: translate(-50%, -5px); }
+        }
+
+        /* Modal Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(3, 4, 6, 0.75);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s ease;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(15, 18, 26, 0.6) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            padding: clamp(30px, 5vw, 50px) clamp(20px, 4vw, 40px);
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.95),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .modal-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .platform-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .platform-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .platform-btn:hover {
+            background: rgba(217, 119, 36, 0.18);
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 25px rgba(217, 119, 36, 0.3);
+            transform: translateX(6px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 18px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(5, 6, 8, 0.9);
+        }
+
+        /* Responsive Tweaks */
+        @media (max-width: 600px) {
+            header {
+                padding: 15px 4%;
+            }
+            .social-links {
+                gap: 6px;
+            }
+            .social-btn {
+                padding: 8px 12px;
+                letter-spacing: 1px;
+            }
+            section {
+                padding: 90px 0 40px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Three.js Interactive Web Canvas -->
+    <canvas id="canvas3d"></canvas>
+    <div class="vignette"></div>
+
+    <!-- Header Navigation -->
+    <header>
+        <a href="#" class="logo-container">
+            <div class="logo-emblem"></div>
+            <div class="logo-text">РЕСПУБЛИКА</div>
+        </a>
+        <div class="social-links">
+            <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
+            <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
+        </div>
+    </header>
+
+    <!-- ИНДИКАТОР ПРОКРУТКИ -->
+    <div class="scroll-hint" id="scrollHint">
+        <span>ЛИСТАЙ ВНИЗ</span>
+        <div class="scroll-arrow"></div>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="content-layer">
+
+        <!-- SECTION 1: HERO -->
+        <section id="hero">
+            <div class="glass-card">
+                <div class="badge">◆ ROLE PLAY WORLD ◆</div>
+                <h1 class="title-primary">РЕСПУБЛИКА</h1>
+                <p class="description">
+                    <strong>«РЕСПУБЛИКА»</strong> — это онлайн-игра для <strong>мобильных устройств</strong> и <strong>ПК</strong> в жанре Role Play с открытым миром! Выбирай свой путь, управляй реальной экономикой и создавай свою историю в самом кинематографичном мире.
+                </p>
+                <div class="btn-cta-container" style="margin: 0 auto;">
+                    <button class="btn-cta" onclick="openModal()">
+                        <span>СКАЧАТЬ ИГРУ</span>
+                        <span style="font-size: 1.2rem;">&#10132;</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: 3D WORLD & FEATURES -->
+        <section id="world">
+            <div class="glass-card">
+                <div class="badge">01 // АВТОНОМНЫЙ МИР</div>
+                <h2 class="title-primary" style="font-size: clamp(1.8rem, 5vw, 3.5rem);">БЕСШОВНЫЙ <span class="title-gold">ОТКРЫТЫЙ МИР</span></h2>
+                <p class="description" style="margin-bottom: 0;">
+                    Погрузись в виртуальное государство с развитой инфраструктурой, сотнями уникальных локаций и реальными игроками со всей планеты. Наша 3D-сеть объединяет игроков со всех платформ в одном едином пространстве.
+                </p>
+            </div>
+        </section>
+
+        <!-- SECTION 3: COMMUNITY & DOWNLOAD -->
+        <section id="community">
+            <div class="glass-card">
+                <div class="badge">02 // ПРИСОЕДИНЯЙСЯ К НАМ</div>
+                <h2 class="title-primary" style="font-size: clamp(1.8rem, 5vw, 3.5rem);">СТАНЬ ЧАСТЬЮ <span class="title-gold">ИМПЕРИИ</span></h2>
+                <p class="description">
+                    Следи за обновлениями, общайся с разработчиками и участвуй в розыгрышах премиального транспорта и недвижимости в наших официальных сообществах.
+                </p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="btn-cta" style="max-width: 260px; text-decoration: none;">
+                        <span>ВКОНТАКТЕ</span>
+                    </a>
+                    <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="btn-cta" style="max-width: 260px; text-decoration: none;">
+                        <span>TELEGRAM</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 РЕСПУБЛИКА ROLE PLAY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+    </footer>
+
+    <!-- Download Modal -->
+    <div class="modal-overlay" id="downloadModal" onclick="closeModalOutside(event)">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div class="badge">ВЫБОР ПЛАТФОРМЫ</div>
+            <h3 class="modal-title">СКАЧАТЬ РЕСПУБЛИКА</h3>
+            <p class="modal-subtitle">Выберите версию для вашего устройства</p>
+            
+            <div class="platform-list">
+                <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="platform-btn">
+                    <span>ANDROID (APK)</span>
+                    <span>&rarr;</span>
+                </a>
+                <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="platform-btn">
+                    <span>IOS (APP STORE)</span>
+                    <span>&rarr;</span>
+                </a>
+                <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="platform-btn">
+                    <span>PC CLIENT (WINDOWS)</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Three.js Script for Copper-Gold Spiderweb / Cyber Mesh Globe & Scroll Dynamics -->
+    <script>
+        // -------------------------------------------------------------
+        // 1. THREE.JS 3D COPPER-GOLD SPIDERWEB SPHERE SCENE
+        // -------------------------------------------------------------
+        const canvas = document.getElementById('canvas3d');
+        const scene = new THREE.Scene();
+        
+        // Camera setup
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 18;
+
+        // Renderer with antialiasing and high alpha precision
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Group container for full rotation control
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        // A. Copper-Gold Metallic Wireframe Web Sphere
+        const outerGeo = new THREE.IcosahedronGeometry(7, 3);
+        const wireframeGeo = new THREE.WireframeGeometry(outerGeo);
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xd97724,
+            transparent: true,
+            opacity: 0.5,
+            linewidth: 1.5
+        });
+        const goldenWebSphere = new THREE.LineSegments(wireframeGeo, lineMaterial);
+        mainGroup.add(goldenWebSphere);
+
+        // B. Node Dots
+        const vertices = outerGeo.attributes.position.array;
+        const dotsGeo = new THREE.BufferGeometry();
+        dotsGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+        const dotsMaterial = new THREE.PointsMaterial({
+            color: 0xffc885,
+            size: 0.22,
+            transparent: true,
+            opacity: 0.95
+        });
+        const dotsMesh = new THREE.Points(dotsGeo, dotsMaterial);
+        mainGroup.add(dotsMesh);
+
+        // C. Inner Core Sphere
+        const innerGeo = new THREE.IcosahedronGeometry(4.2, 2);
+        const innerMat = new THREE.MeshBasicMaterial({
+            color: 0x8c430e,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.3
+        });
+        const innerSphere = new THREE.Mesh(innerGeo, innerMat);
+        mainGroup.add(innerSphere);
+
+        // D. Orbital Cyber Rings
+        function createRing(radius, tube, color) {
+            const ringGeo = new THREE.TorusGeometry(radius, tube, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: color, wireframe: true, transparent: true, opacity: 0.4 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            return ring;
+        }
+
+        const ring1 = createRing(9.5, 0.05, 0xd97724);
+        ring1.rotation.x = Math.PI / 3;
+        mainGroup.add(ring1);
+
+        const ring2 = createRing(11, 0.03, 0xffc885);
+        ring2.rotation.y = Math.PI / 4;
+        mainGroup.add(ring2);
+
+        // E. Floating Ambient Copper Dust Particles
+        const particleCount = window.innerWidth < 600 ? 150 : 350;
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCoords = new Float32Array(particleCount * 3);
+
+        for(let i = 0; i < particleCount * 3; i++) {
+            particleCoords[i] = (Math.random() - 0.5) * 45;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particleCoords, 3));
+
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xd97724,
+            size: 0.12,
+            transparent: true,
+            opacity: 0.65
+        });
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
+
+        // -------------------------------------------------------------
+        // 2. MOUSE / TOUCH PARALLAX INTERACTION
+        // -------------------------------------------------------------
+        let targetX = 0;
+        let targetY = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function onPointerMove(e) {
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            if (x && y) {
+                mouseX = (x - window.innerWidth / 2) * 0.0008;
+                mouseY = (y - window.innerHeight / 2) * 0.0008;
+            }
+        }
+
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('touchmove', onPointerMove);
+
+        // -------------------------------------------------------------
+        // 3. SCROLL-DRIVEN 3D TRANSFORMATIONS & ANIMATION
+        // -------------------------------------------------------------
+        let scrollY = 0;
+        const scrollHintEl = document.getElementById('scrollHint');
+
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+
+            if (scrollY > 50) {
+                scrollHintEl.classList.add('hidden');
+            } else {
+                scrollHintEl.classList.remove('hidden');
+            }
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            goldenWebSphere.rotation.y = elapsedTime * 0.15;
+            goldenWebSphere.rotation.x = elapsedTime * 0.08;
+
+            dotsMesh.rotation.y = elapsedTime * 0.15;
+            dotsMesh.rotation.x = elapsedTime * 0.08;
+
+            innerSphere.rotation.y = -elapsedTime * 0.2;
+            ring1.rotation.z = elapsedTime * 0.1;
+            ring2.rotation.x = elapsedTime * 0.12;
+
+            const scrollFactor = scrollY * 0.0025;
+
+            mainGroup.rotation.y = scrollFactor * 1.5;
+            mainGroup.rotation.x = scrollFactor * 0.8;
+            
+            const targetScale = 1 + Math.sin(scrollFactor) * 0.25;
+            mainGroup.scale.set(targetScale, targetScale, targetScale);
+
+            mainGroup.position.y = -scrollFactor * 2.5;
+
+            targetX += (mouseX - targetX) * 0.05;
+            targetY += (mouseY - targetY) * 0.05;
+
+            mainGroup.rotation.y += targetX;
+            mainGroup.rotation.x += targetY;
+
+            particleSystem.rotation.y = elapsedTime * 0.03;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // -------------------------------------------------------------
+        // 4. WINDOW RESIZE HANDLING
+        // -------------------------------------------------------------
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            if (window.innerWidth < 600) {
+                camera.position.z = 24;
+            } else {
+                camera.position.z = 18;
+            }
+        });
+
+        if (window.innerWidth < 600) {
+            camera.position.z = 24;
+        }
+
+        // -------------------------------------------------------------
+        // 5. MODAL CONTROLS
+        // -------------------------------------------------------------
+        function openModal() {
+            document.getElementById('downloadModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('downloadModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function closeModalOutside(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
