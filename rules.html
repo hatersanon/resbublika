@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Правила — РЕСПУБЛИКА RP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --gold-primary: #d97724;
+            --gold-light: #ffc885;
+            --gold-dark: #8c430e;
+            --gold-gradient: linear-gradient(135deg, #c8681e 0%, #ffd49b 25%, #a64f11 50%, #f7b267 75%, #8c430e 100%);
+            --gold-glow: rgba(217, 119, 36, 0.4);
+            --bg-dark: #050608;
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            position: relative;
+            width: 100%;
+            overflow-x: hidden;
+            background: var(--bg-dark);
+            line-height: 1.6;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(217, 119, 36, 0.08) 0%, transparent 70%),
+                radial-gradient(circle at 50% 80%, rgba(5, 6, 8, 0.85) 0%, rgba(5, 6, 8, 0.95) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 6%;
+            background: rgba(5, 6, 8, 0.45);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-emblem {
+            width: 14px;
+            height: 14px;
+            background: var(--gold-gradient);
+            transform: rotate(45deg);
+            box-shadow: 0 0 15px var(--gold-primary);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 900;
+            letter-spacing: 5px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(217, 119, 36, 0.3);
+            white-space: nowrap;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .social-btn {
+            position: relative;
+            color: #fff;
+            text-decoration: none;
+            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-btn:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.35);
+            background: rgba(217, 119, 36, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 0 60px 0;
+            position: relative;
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(15, 18, 26, 0.35) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border-radius: 28px;
+            padding: clamp(25px, 5vw, 60px);
+            width: 100%;
+            max-width: 920px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(217, 119, 36, 0.08);
+            text-align: left;
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(217, 119, 36, 0.45);
+            box-shadow: 
+                0 35px 70px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                0 0 30px rgba(217, 119, 36, 0.2);
+        }
+
+        .glass-card:hover::after {
+            left: 100%;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: rgba(217, 119, 36, 0.15);
+            border: 1px solid rgba(217, 119, 36, 0.45);
+            color: var(--gold-light);
+            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(217, 119, 36, 0.2);
+        }
+
+        .title-primary {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.2rem, 7vw, 4.2rem);
+            font-weight: 900;
+            letter-spacing: clamp(4px, 1.5vw, 12px);
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #ffffff 40%, rgba(255, 255, 255, 0.55) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
+        }
+
+        .title-gold {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+            line-height: 1.85;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin: 0 auto 40px auto;
+            max-width: 750px;
+            text-align: center;
+        }
+
+        .description strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .btn-cta {
+            position: relative;
+            padding: clamp(12px, 2vw, 18px) clamp(25px, 4vw, 45px);
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #050608;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 35px rgba(217, 119, 36, 0.45);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
+            max-width: 280px;
+            width: 100%;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(217, 119, 36, 0.7);
+        }
+
+        .btn-cta.small {
+            padding: 10px 16px;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            max-width: 180px;
+        }
+
+        /* Rules Navigation */
+        .rules-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .rules-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.03);
+            text-transform: uppercase;
+        }
+
+        .rules-nav a:hover {
+            border-color: var(--gold-primary);
+            color: #fff;
+            background: rgba(217, 119, 36, 0.15);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.2);
+        }
+
+        /* Rules Content */
+        .rules-content {
+            color: var(--text-main);
+        }
+
+        .rules-content h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2.4rem);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #fff;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(217, 119, 36, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .rules-content h3 {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 12px;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+        }
+
+        .rules-content p {
+            margin-bottom: 16px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+        }
+
+        .rules-content ul, .rules-content ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+            line-height: 1.8;
+        }
+
+        .rules-content ul li, .rules-content ol li {
+            margin-bottom: 6px;
+        }
+
+        .rules-content .rule-block {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--gold-primary);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .rules-content .rule-block strong {
+            color: #fff;
+        }
+
+        .rules-content .punishment {
+            background: rgba(217, 119, 36, 0.08);
+            border: 1px solid rgba(217, 119, 36, 0.2);
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin: 12px 0 20px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .rules-content .punishment strong {
+            color: var(--gold-light);
+        }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(5, 6, 8, 0.9);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 15px 4%;
+            }
+            .social-links {
+                gap: 6px;
+            }
+            .social-btn {
+                padding: 8px 12px;
+                letter-spacing: 1px;
+                font-size: 0.65rem;
+            }
+            section {
+                padding: 90px 0 40px 0;
+            }
+            .rules-nav a {
+                font-size: 0.6rem;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Background -->
+    <canvas id="canvas3d"></canvas>
+    <div class="vignette"></div>
+
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="logo-container">
+            <div class="logo-emblem"></div>
+            <div class="logo-text">РЕСПУБЛИКА</div>
+        </a>
+        <div class="social-links">
+            <a href="index.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ГЛАВНАЯ</a>
+            <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
+            <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
+            <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="social-btn">Discord</a>
+        </div>
+    </header>
+
+    <div class="content-layer">
+        <section id="rules">
+            <div class="glass-card" style="max-width: 1100px;">
+                <div class="badge">📜 ПРАВИЛА ПРОЕКТА</div>
+                <h1 class="title-primary" style="text-align: center;">ПОЛЬЗОВАТЕЛЬСКОЕ <span class="title-gold">СОГЛАШЕНИЕ</span></h1>
+                <p class="description" style="text-align: center; margin-bottom: 30px;">
+                    <strong>«РЕСПУБЛИКА RP»</strong> — внимательно ознакомьтесь с правилами перед началом игры.
+                </p>
+
+                <!-- Navigation -->
+                <div class="rules-nav">
+                    <a href="#section1">1. Общие</a>
+                    <a href="#section2">2. Учетные записи</a>
+                    <a href="#section3">3. Игровые ники</a>
+                    <a href="#section4">4. RP-режим</a>
+                    <a href="#section5">5. Чаты</a>
+                    <a href="#section6">6. Злонамеренный обман</a>
+                    <a href="#section7">7. Грубые нарушения</a>
+                    <a href="#section8">8. Обратная связь</a>
+                </div>
+
+                <div class="rules-content">
+
+                    <!-- SECTION 1 -->
+                    <h2 id="section1">1. ОБЩИЕ ПОЛОЖЕНИЯ</h2>
+                    
+                    <p><strong>1.1</strong> Настоящая Оферта регулирует отношения в рамках ролевого проекта «РЕСПУБЛИКА RP». Все действия происходят на игровой виртуальной карте, моделирующей урбанистическую среду. Упоминания городов, регионов и государственных институтов носят исключительно игровой (симуляционный) характер и не имеют отношения к реально существующим Российской Федерации, её субъектам или муниципальным образованиям. Понятия «город», «УК» и «АК» используются как внутриигровая терминология для обозначения механик проекта.</p>
+                    
+                    <p><strong>1.2</strong> Возрастное ограничение проекта: 16+. Регистрируясь на данном проекте, вы подтверждаете, что вы достигли шестнадцати лет.</p>
+                    
+                    <p><strong>1.3</strong> Отношения на проекте должны быть построены на взаимном и вежливом отношении друг к другу. Мы не поощряем токсичную игру.</p>
+                    
+                    <p><strong>1.4</strong> Каждый игрок, зарегистрированный на проекте, считается ознакомленным со всеми правилами с момента регистрации и несет ответственность за их несоблюдение.</p>
+                    
+                    <p><strong>1.5</strong> Правила действуют на всех игроков, независимо от их игрового статуса на проекте.</p>
+                    
+                    <p><strong>1.6</strong> При изменении правил, администрация оставляет за собой право не уведомлять пользователей. В ином случае будет оповещение в группе/на проекте, а также на официальных веб-ресурсах и официальных серверах Discord.</p>
+                    
+                    <p><strong>1.7</strong> Администрация на данном сервере действует в рамках установленных правил проекта. Администрация с должностями «Куратор», «Спец. Администратор», «Руководитель» - вправе индивидуально изменять меру наказания, на свое усмотрение.</p>
+                    
+                    <p><strong>1.8</strong> Аффилированные учетные записи — учетные записи связанные одним или несколькими признаками.</p>
+                    
+                    <p><strong>1.9</strong> Конечный продукт «РЕСПУБЛИКА RP» — создание максимально—комфортного игрового процесса, доступного каждому пользователю.</p>
+                    
+                    <p><strong>1.10</strong> Нарушение — совершение пользователем действия, запрещенного правилами проекта. Влечет за собой применение наказания к учетной записи пользователя.</p>
+                    
+                    <p><strong>1.11</strong> Повторное нарушение — намеренное нарушение правил проекта, совершенное после применения наказания за аналогичное нарушение.</p>
+                    
+                    <p><strong>1.12</strong> Наказание — действие по ограничению или прекращению доступа пользователя к проекту «РЕСПУБЛИКА RP» или к отдельным его элементам.</p>
+                    
+                    <p><strong>1.13</strong> Блокировка по лаунчеру — действие по ограничению или прекращению доступа пользователя с ограничением доступа к «РЕСПУБЛИКА RP» через лаунчер. Не дает возможности к подключению на сервер, даже после создания новой учётной записи.</p>
+
+                    <!-- SECTION 2 -->
+                    <h2 id="section2">2. УЧЕТНЫЕ ЗАПИСИ ПОЛЬЗОВАТЕЛЕЙ</h2>
+                    
+                    <h3>2.1 Учетные записи пользователей</h3>
+                    <p>Учетные записи пользователей — созданные конечным пользователем аккаунты для доступа к сервису предоставляемому «РЕСПУБЛИКА RP».</p>
+                    
+                    <div class="rule-block">
+                        <p><strong>2.1.1</strong> Зарегистрированные на «РЕСПУБЛИКА RP» учетные записи являются интеллектуальной собственностью компании «РЕСПУБЛИКА RP».</p>
+                        <p><strong>2.1.2</strong> «РЕСПУБЛИКА RP» сохраняет за собой исключительные права на все учетные записи пользователей.</p>
+                    </div>
+
+                    <h3>2.2 Политика «РЕСПУБЛИКА RP» по отношению к учетным записям пользователей</h3>
+                    
+                    <p><strong>2.2.1</strong> Администрация и сотрудники «РЕСПУБЛИКА RP» никогда не будут просить у вас пароль и защитный код от вашей учетной записи. Не доверяйте мошенникам!</p>
+                    <p><strong>2.2.2</strong> Администрация не несет ответственности за сохранность игрового имущества, а также имущества, закрепленного за игроками.</p>
+                    <p><strong>2.2.3</strong> Администрация не занимается восстановлением игрового имущества, в случае передачи вашей учетной записи третьим лицам.</p>
+                    
+                    <p><strong>2.2.4</strong> Запрещена продажа или покупка учетных записей.</p>
+                    <div class="punishment">
+                        <strong>Наказание для продавца:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.<br>
+                        <strong>Наказание для покупателя:</strong><br>
+                        - Постоянная блокировка действия учетной записи, полученной с нарушением данного пункта правил.
+                    </div>
+
+                    <p><strong>2.2.5</strong> Пользователям запрещена продажа игрового имущества за реальные деньги.</p>
+                    <div class="punishment">
+                        <strong>Наказание для продавца:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.<br>
+                        <strong>Наказание для покупателя:</strong><br>
+                        - Удаление игрового имущества, полученного с нарушением данного пункта правил.
+                    </div>
+
+                    <p><strong>2.2.6</strong> Запрещена намеренная передача учетной записи третьим лицам.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 7 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Постоянная блокировка действия учетной записи.
+                    </div>
+
+                    <p><strong>2.2.7</strong> Запрещено создание и/или использование более одной учетной записи</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.
+                    </div>
+
+                    <h3>2.3 Получение несанкционированного доступа к чужой учетной записи</h3>
+                    <p>Запрещены любые действия, совершенные как на игровом проекте, так и вне его, направленные на получение несанкционированного доступа к учетной записи, зарегистрированной другим игроком проекта.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.<br>
+                        Администрация проекта в лице руководства, в случае обращения пострадавшего лица в праве составить заявление в отдел МВД г. Москвы от имени проекта «РЕСПУБЛИКА RP» в лице представителя проекта.
+                    </div>
+
+                    <!-- SECTION 3 -->
+                    <h2 id="section3">3. ИГРОВЫЕ НИКИ</h2>
+                    <p>Ники игроков должны иметь следующий формат: "Имя Фамилия". (Максим Иванов, Милана Раевская и т.д.)</p>
+
+                    <p><strong>3.1</strong> Запрещено использовать ники, не являющиеся именем и фамилией. (Кекс Вкусный, Абрам Богатый, Ксюха Двеусловки и т.д.)</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Принудительная смена имени персонажа.
+                    </div>
+
+                    <p><strong>3.2</strong> Запрещено использовать мужские и женские элементы ника одновременно (Елизавета Иванов, Александр Разумовская и т.д.)</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Принудительная смена имени персонажа.
+                    </div>
+
+                    <p><strong>3.3</strong> Запрещено использовать ники с использованием чисел, специальных символов и символов латинского алфавита. (Nikita Kek, Максим 567, &&ВИТЕК%% Крутой и т.д.)</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Принудительная смена имени персонажа.
+                    </div>
+
+                    <p><strong>3.4</strong> Запрещено использовать оскорбительные и нецензурные ники.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Принудительная смена имени персонажа.
+                    </div>
+
+                    <!-- SECTION 4 -->
+                    <h2 id="section4">4. RP-РЕЖИМ</h2>
+                    <p>Игровой процесс на сервере неотъемлемо связан с ролевой игрой, отыгрышем своего персонажа и взаимодействием с персонажами других игроков.</p>
+                    
+                    <p><strong>OOC</strong> (Вне персонажа, Out of character) — взаимодействие с другими игроками, происходящее независимо от ролевого процесса, через внешние площадки «РЕСПУБЛИКА RP», специальные игровые чаты или иные способы связи.</p>
+                    <p><strong>IC</strong> (В режиме ролевой игры, In character) — взаимодействие с другими игроками или игровым миром, происходящее непосредственно во время ролевого процесса.</p>
+
+                    <p><strong>4.1 MG</strong> (МетаГейминг, MetaGaming) — использование информации, полученной в режиме OOC во время ролевой игры.</p>
+                    <div class="punishment">
+                        <strong>Наказание по инициативе администратора:</strong><br>
+                        - Блокировка текстового и голосового чата на срок от 5 до 30 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Блокировка текстового и голосового чата на срок 15 минут.
+                    </div>
+
+                    <p><strong>4.2 DM</strong> (ДесМатч, DeathMatch) — убийство персонажа другого игрока, совершенное вне режима IC.</p>
+                    <div class="punishment">
+                        <strong>Наказание по инициативе администратора:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 15 до 60 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 90 минут.
+                    </div>
+
+                    <p><strong>4.3 DM Auto</strong> (ДМ авто, AutoDeathmatch) — уничтожение или нанесение урона чужому транспортному средству вне режима IC.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 30 до 120 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 90 минут.
+                    </div>
+
+                    <p><strong>4.3.1</strong> Повреждение чужого транспортного средства путём столкновения, равно как и умышленное создание ДТП</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 30 до 120 минут.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Лишение водительских прав и отправка на пересдачу.<br>
+                        - Временная приостановка действия учётной записи на срок до 7 дней.
+                    </div>
+
+                    <p><strong>4.4 DB</strong> (ДрайвБи, DriveBy) — убийство или попытка убийства машиной или расстрел с водительского места.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        — Перемещение персонажа в КПЗ на срок от 20 до 60 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        — Перемещение персонажа в КПЗ на срок 40 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на срок 120 минут.
+                    </div>
+
+                    <p><strong>4.5 RK</strong> (РевенджКил, RavengeKill) — убийство игрока, за то что он убил тебя прежде (не возвращаться на место убийства в течении 20 минут).</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        — Перемещение персонажа в КПЗ на срок от 40 до 80 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        — Перемещение персонажа в КПЗ на срок 60 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на срок 180 минут.
+                    </div>
+
+                    <p><strong>4.6 RK</strong> (РепитКил, RepeatKill) — намеренное, повторное убийство одного и того же игрока.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        — Перемещение персонажа в КПЗ на срок от 20 до 70 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        — Перемещение персонажа в КПЗ на срок 40 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на срок 120 минут.
+                    </div>
+
+                    <p><strong>4.7 TK</strong> (ТимКил, TeamKill) — убийство члена своей фракции.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        — Увольнение из фракции.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        — Увольнение из фракции.<br>
+                        — Перемещение персонажа в КПЗ на срок 40 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на срок 120 минут.
+                    </div>
+
+                    <p><strong>4.8 PG</strong> (ПауэрГейминг, PowerGaming) — превышение физических возможностей персонажа, или нарушение принятой персонажем игрока модели поведения: не чувствовать боль, бегать со сломанной ногой, ездить на крыше транспортного средства, нападать с кулаками на вооруженного персонажа, нападать в одиночку на толпу и т.д.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        — Перемещение персонажа в КПЗ на 60 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        — Перемещение персонажа в КПЗ на 60 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 180 минут.
+                    </div>
+
+                    <p><strong>4.9 SK</strong> (Спавн Килл, Убийство на респауне, Spawn Kill) — убийство персонажей других игроков в точках респауна, а также в зеленых зонах.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 30 до 120 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 60 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 180 минут.
+                    </div>
+
+                    <p><strong>4.10 NRP</strong> (НонРП, неролевое поведение) — нарушение логики действий персонажа, также нереалистичное поведение персонажа, либо создание нереалистичных ситуаций персонажем, совершенное в IC-режиме.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 20 до 40 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 90 минут.
+                    </div>
+
+                    <p><strong>4.11 NRP-Driving</strong> (НонРП-езда) — управление транспортным средством, невозможное в реальной жизни, или совершенное с нарушением правил дорожного движения во время нахождения персонажа игрока на рабочей смене.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 10 до 30 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении(в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 90 минут.
+                    </div>
+
+                    <p><strong>4.12 Cheat</strong> (Читы) — использование стороннего программного обеспечения, модификаций, хаков, CLEO-скриптов и т.д., с целью получения преимущества над другими игроками и/или создания помех.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - В зависимости от обстоятельств, блокировка аккаунта на срок от 15 дней и вплоть до перманентной блокировки, а также возможная блокировка всех аффилированных учетных записей.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Блокировка аккаунта на срок 15 дней и вплоть до перманентной блокировки, а также возможная блокировка всех аффилированных учетных записей.<br>
+                        <strong>Повторное наказание (в течение 60-ти суток):</strong><br>
+                        - Блокировка игрока по лаунчеру на 30 дней.
+                    </div>
+
+                    <p><strong>4.13</strong> Создание помех для ролевого процесса — вмешательство в ролевой процесс других игроков, совершенный вне IC-режима или с нарушением правил проекта.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 10 до 30 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 90 минут.
+                    </div>
+
+                    <p><strong>4.14 Abuse</strong> (Абьюз, Bug, Баг) — использование любых ошибок игрового мода или неисправностей, с целью получения преимущества над другими игроками и/или создания помех.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 3 дней.<br>
+                        - Удаление игрового имущества, полученного с нарушением данного пункта правил.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Блокировка аккаунта на срок 15 дней, а также возможная блокировка всех аффилированных учетных записей.<br>
+                        <strong>При повторном нарушении (в течение 30 суток):</strong><br>
+                        - Блокировка аккаунта на срок 45 дней, а также возможная блокировка всех аффилированных учетных записей.
+                    </div>
+
+                    <p><strong>4.15</strong> Срыв мероприятия — вмешательство в проводимое администрацией или согласованное игроками проекта с администрацией, мероприятие, с целью создания помех ролевому процессу.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 15 до 45 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 90 минут.
+                    </div>
+
+                    <p><strong>4.16</strong> Криминальная деятельность в зелёных зонах</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок от 15 до 45 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 90 минут.
+                    </div>
+
+                    <p><strong>4.17</strong> Поощерение или призыв к нарушению правил проекта другими игроками.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 15-60 минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 90 минут.
+                    </div>
+
+                    <p><strong>4.18</strong> AFK помеха игрокам, вне зависимости от того, вызвана ли помеха действием или бездействием пользователя.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 15-30минут.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 90 минут.
+                    </div>
+
+                    <p><strong>4.18.1</strong> AFK на дороге более 5-ти минут.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Отключение игрока от сервера
+                    </div>
+
+                    <p><strong>4.18.2</strong> AFK во время боя.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Отключение игрока от сервера
+                    </div>
+
+                    <p><strong>4.18.3</strong> AFK во время ролевого процесса.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 30-60.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        - Перемещение персонажа в КПЗ на срок 45 минут.<br>
+                        <strong>При повторном нарушении (в течение 3-ех суток):</strong><br>
+                        — Перемещение персонажа в КПЗ на 135 минут.
+                    </div>
+
+                    <p><strong>4.18.5</strong> Запрещено стоять AFK без ESC.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Отключение игрока от сервера
+                    </div>
+
+                    <p><strong>4.19</strong> Обман игроков.</p>
+                    <p>Сознательное введение другого игрока в заблуждение, в корыстных целях, не поощряется на нашем проекте. Администрация оставляет за собой право отказать в рассмотрении жалобы при отсутствии подтверждения условий внутриигровой сделки.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Удаление игрового имущества, полученного с нарушением данного пункта правил.<br>
+                        - Временная приостановка действия учетной записи на срок до 7 дней.<br>
+                        <strong>Наказание после обработки жалобы в РЕСПУБЛИКА COMMUNITY:</strong><br>
+                        Удаление всего игрового имущества, полученного с момента нарушения данного пункта правил.<br>
+                        - Временная приостановка действия учетной записи на срок до 7 дней.<br>
+                        <strong>При повторном нарушении (в течение 180 дней):</strong><br>
+                        — Блокировка игрока по лаунчеру.
+                    </div>
+
+                    <p><strong>4.19.1</strong> Возврат имущества.</p>
+                    <p>Администрация проекта «РЕСПУБЛИКА RP» оставляет за собой выбор возврата имущества, утерянного пользователем, вследствие неисполнения условий внутриигровой сделки. Данное положение распространяется на всех участников сделки.</p>
+
+                    <!-- SECTION 5 -->
+                    <h2 id="section5">5. ЧАТЫ И КАНАЛЫ ОБРАТНОЙ СВЯЗИ</h2>
+
+                    <p><strong>5.1</strong> Оскорбления.</p>
+                    <p>Запрещены любые оскорбления игроков в OOC-чат и злоупотребление оскорблениями, неуместными в текущей ролевой ситуации, в IC-чат.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Блокировка текстового и голосового чата на срок от 15 минут до 1 часа
+                    </div>
+
+                    <p><strong>5.2</strong> Запрещено осуществлять рекламу сайтов, иных проектов, являющихся конкурентами «РЕСПУБЛИКА RP», или сайтов с контентом, нарушающим правила «РЕСПУБЛИКА RP».</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Блокировка текстового и голосового чата на срок от 12 до 24 часов или временная приостановка действия учетной записи на срок до 1 дня.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.
+                    </div>
+
+                    <p><strong>5.3</strong> Запрещено использование программного обеспечения для изменения аудиопотока, записанного через устройство ввода и передаваемого на игровой сервер.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Блокировка текстового и голосового чата на срок от 15 до 60 минут.
+                    </div>
+
+                    <p><strong>5.4</strong> Запрещено повторять сообщения более двух раз, а также писать сообщения, лишенные смысловой нагрузки.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Блокировка текстового и голосового чата на срок от 5 до 30 минут.
+                    </div>
+
+                    <p><strong>5.5</strong> Запрещено злоупотреблять прописными буквами.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Блокировка текстового и голосового чата на срок от 5 до 30 минут.
+                    </div>
+
+                    <!-- SECTION 6 -->
+                    <h2 id="section6">6. ЗЛОНАМЕРЕННЫЙ ОБМАН</h2>
+
+                    <p><strong>6.1</strong> Выдача себя за представителя «РЕСПУБЛИКА RP».</p>
+                    <p>Запрещено сообщать пользователям заведомо ложную информацию о наличии каких-либо отношений с «РЕСПУБЛИКА RP», равно как и информацию о наличии личных связей с администрацией «РЕСПУБЛИКА RP».</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 3 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 7 дней.
+                    </div>
+
+                    <p><strong>6.1.1</strong> Выдача себя за представителя «РЕСПУБЛИКА RP», совершенная с целью получения доступа к чужой учетной записи запрещена.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.<br>
+                        Администрация проекта в лице руководства, в случае обращения пострадавшего лица в праве составить заявление в отдел МВД г. Москвы от имени проекта «РЕСПУБЛИКА RP» в лице представителя проекта.
+                    </div>
+
+                    <p><strong>6.1.2</strong> Выдача себя за представителя «РЕСПУБЛИКА RP», совершенная с целью завладения игровым имуществом других пользователей запрещена.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 30 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.<br>
+                        Администрация проекта в лице руководства, в случае обращения пострадавшего лица в праве составить заявление в отдел МВД г. Москвы от имени проекта «РЕСПУБЛИКА RP» в лице представителя проекта.
+                    </div>
+
+                    <p><strong>6.1.3</strong> Выдача себя за представителя «РЕСПУБЛИКА RP», совершенная с целью создания токсичной атмосферы запрещена.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 7 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 30 дней.
+                    </div>
+
+                    <p><strong>6.2</strong> Злоупотребление каналами обратной связи.</p>
+                    <p>Запрещена передача заведомо ложной информации администрации проекта с целью получения преимущества над другими игроками, или применения наказания к учетной записи другого игрока.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 3 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 30 дней.
+                    </div>
+
+                    <!-- SECTION 7 -->
+                    <h2 id="section7">7. ГРУБЫЕ НАРУШЕНИЯ</h2>
+                    <p>Грубые нарушения — действия пользователей, направленные на причинение ущерба продукту «РЕСПУБЛИКА RP», а также направленные на саботаж деятельности администрации «РЕСПУБЛИКА RP».</p>
+                    <p>Администрация «РЕСПУБЛИКА RP» применяет иные наказания к пользователям, совершившим грубое нарушение, вне зависимости от наличия или отсутствия умысла.</p>
+
+                    <p><strong>7.1</strong> Злоупотребление правилами — использование неуказанных в правилах элементов взаимодействия с игровым миром или другими пользователями, с целью получения значительного преимущества над другими игроками, или создания значительных помех ролевому процессу.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 30 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.
+                    </div>
+
+                    <p><strong>7.2</strong> Систематические нарушения — повторяющиеся нарушения правил проекта, а также поведение, направленное на создание ситуаций, создающих помехи другим игрокам.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 90 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.
+                    </div>
+
+                    <p><strong>7.3</strong> Ущерб серверам — любое действие или бездействие, направленное на нанесение значительного вреда экономике игровой валюты или стабильности работы сервера</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Постоянная блокировка действия учетной записи, а также всех аффилированных учетных записей.<br>
+                        Администрация проекта в лице руководства имеет право на компенсацию от нарушителя как пострадавшая сторона и в праве составить заявление в отдел МВД г. Москвы от имени проекта «РЕСПУБЛИКА RP» в лице представителя проекта.
+                    </div>
+
+                    <p><strong>7.4</strong> Создание токсичной атмосферы — активный троллинг, провокации, создание чувства преследования, систематические оскорбления или дискриминация других игроков по любому признаку.</p>
+                    <div class="punishment">
+                        <strong>Наказание:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 7 дней.<br>
+                        <strong>При повторном нарушении:</strong><br>
+                        - Временная приостановка действия учетной записи на срок до 30 дней.
+                    </div>
+
+                    <!-- SECTION 8 -->
+                    <h2 id="section8">8. ОБРАТНАЯ СВЯЗЬ</h2>
+                    <p>[Не доступна] — форма для обратной связи с руководителем администрации «РЕСПУБЛИКА RP».</p>
+
+                    <h3>8.1 Жалобы</h3>
+                    <p>Перед отправкой обращения необходимо указать его категорию.</p>
+
+                    <p><strong>8.1.1</strong> Жалоба на пользователя, позволяет сообщить о недопустимых действиях, совершенным одним из игроков проекта.</p>
+                    <p><strong>8.1.2</strong> Жалоба на действия участников и лидеров фракций, позволяет сообщить о нарушениях, совершенных участниками фракций или о недобросовестном исполнении своих обязанностей лидером фракции.</p>
+                    <p><strong>8.1.3</strong> Жалоба на действия администрации, позволяет оставить жалобу на действия или бездействия представителей администрации «РЕСПУБЛИКА RP».</p>
+                    
+                    <p><strong>8.1.3.1</strong> Жалобы настоящей категории рассматриваются руководителем администрации «РЕСПУБЛИКА RP».</p>
+                    <p><strong>8.1.3.2</strong> Жалобы настоящей категории рассматриваются только при полном заполнении формы обращения и указания контактов для связи с пользователем.</p>
+
+                    <h3>8.2 Пересмотр блокировки в Discord</h3>
+                    <p>Пользователи, имеющие веские основания для того, чтобы считать примененное, к его учетной записи Discord, наказание несоответствующим совершенному нарушению, или ошибочным, могут оставить запрос на пересмотр мер, принятых администрацией «РЕСПУБЛИКА RP», по отношению к его учетной записи Discord.</p>
+
+                    <p><strong>8.2.1</strong> Порядок рассмотрения обращений по пересмотру наказаний.</p>
+                    <p><strong>8.2.1.1</strong> Обращения настоящей категории рассматриваются руководителем администрации «РЕСПУБЛИКА RP».</p>
+                    <p><strong>8.2.1.2</strong> Срок рассмотрения составляет семь рабочих дней.</p>
+                    <p><strong>8.2.1.3</strong> Повторные обращения по пересмотру наказаний могут быть оставлены без ответа.</p>
+
+                    <h3>8.3 Пересмотр наказаний</h3>
+                    <p>Пользователи, имеющие веские основания для того, чтобы считать примененное к его учетной записи наказание несоответствующим совершенному нарушению, или ошибочным, могут оставить запрос на пересмотр мер, принятых администрацией «РЕСПУБЛИКА RP», по отношению к его учетной записи.</p>
+
+                    <p><strong>8.3.1</strong> Порядок рассмотрения обращений по пересмотру наказаний.</p>
+                    <p><strong>8.3.1.1</strong> Обращения настоящей категории рассматриваются руководителем администрации «РЕСПУБЛИКА RP».</p>
+                    <p><strong>8.3.1.2</strong> Срок рассмотрения составляет семь рабочих дней.</p>
+                    <p><strong>8.3.1.3</strong> Наказания за нарушения пунктов седьмого раздела могут быть пересмотрены только в случае некорректной меры наказания, вынесенной администрацией.</p>
+                    <p><strong>8.3.1.4</strong> Повторные обращения по пересмотру наказаний могут быть оставлены без ответа.</p>
+
+                    <h3>8.4 Иные категории обращений</h3>
+
+                    <p><strong>8.4.1</strong> Сообщение об ошибке, позволяет пользователю сообщить о имеющихся на проекте неполадках или сообщить об известной уязвимости.</p>
+                    <p><strong>8.4.1.1</strong> Сообщения настоящей категории, предупредившие нанесение ущерба продукту «РЕСПУБЛИКА RP» вознаграждаются игровой валютой, при указании контактов для связи с пользователем.</p>
+
+                    <p><strong>8.4.2</strong> Категория «Оставить мнение, высказать предложение или задать вопрос», позволяет оставить обращение руководству «РЕСПУБЛИКА RP».</p>
+
+                </div>
+
+                <div style="text-align: center; margin-top: 50px;">
+                    <a href="index.html" class="btn-cta" style="max-width: 300px; text-decoration: none; margin: 0 auto;">
+                        <span>ВЕРНУТЬСЯ НА ГЛАВНУЮ</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        &copy; 2026 РЕСПУБЛИКА ROLE PLAY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+    </footer>
+
+    <!-- 3D Script -->
+    <script>
+        const canvas = document.getElementById('canvas3d');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 18;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        const outerGeo = new THREE.IcosahedronGeometry(7, 3);
+        const wireframeGeo = new THREE.WireframeGeometry(outerGeo);
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xd97724,
+            transparent: true,
+            opacity: 0.4,
+        });
+        const goldenWebSphere = new THREE.LineSegments(wireframeGeo, lineMaterial);
+        mainGroup.add(goldenWebSphere);
+
+        const vertices = outerGeo.attributes.position.array;
+        const dotsGeo = new THREE.BufferGeometry();
+        dotsGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const dotsMaterial = new THREE.PointsMaterial({
+            color: 0xffc885,
+            size: 0.18,
+            transparent: true,
+            opacity: 0.7
+        });
+        const dotsMesh = new THREE.Points(dotsGeo, dotsMaterial);
+        mainGroup.add(dotsMesh);
+
+        const innerGeo = new THREE.IcosahedronGeometry(4.2, 2);
+        const innerMat = new THREE.MeshBasicMaterial({
+            color: 0x8c430e,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.2
+        });
+        const innerSphere = new THREE.Mesh(innerGeo, innerMat);
+        mainGroup.add(innerSphere);
+
+        function createRing(radius, tube, color) {
+            const ringGeo = new THREE.TorusGeometry(radius, tube, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: color, wireframe: true, transparent: true, opacity: 0.3 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            return ring;
+        }
+
+        const ring1 = createRing(9.5, 0.04, 0xd97724);
+        ring1.rotation.x = Math.PI / 3;
+        mainGroup.add(ring1);
+
+        const ring2 = createRing(11, 0.02, 0xffc885);
+        ring2.rotation.y = Math.PI / 4;
+        mainGroup.add(ring2);
+
+        const particleCount = window.innerWidth < 600 ? 100 : 200;
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCoords = new Float32Array(particleCount * 3);
+        for(let i = 0; i < particleCount * 3; i++) {
+            particleCoords[i] = (Math.random() - 0.5) * 45;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particleCoords, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xd97724,
+            size: 0.08,
+            transparent: true,
+            opacity: 0.4
+        });
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
+
+        let targetX = 0;
+        let targetY = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function onPointerMove(e) {
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            if (x && y) {
+                mouseX = (x - window.innerWidth / 2) * 0.0006;
+                mouseY = (y - window.innerHeight / 2) * 0.0006;
+            }
+        }
+
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('touchmove', onPointerMove);
+
+        let scrollY = 0;
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            goldenWebSphere.rotation.y = elapsedTime * 0.1;
+            goldenWebSphere.rotation.x = elapsedTime * 0.05;
+
+            dotsMesh.rotation.y = elapsedTime * 0.1;
+            dotsMesh.rotation.x = elapsedTime * 0.05;
+
+            innerSphere.rotation.y = -elapsedTime * 0.15;
+            ring1.rotation.z = elapsedTime * 0.08;
+            ring2.rotation.x = elapsedTime * 0.1;
+
+            const scrollFactor = scrollY * 0.0015;
+
+            mainGroup.rotation.y = scrollFactor * 1.2;
+            mainGroup.rotation.x = scrollFactor * 0.6;
+            
+            const targetScale = 1 + Math.sin(scrollFactor) * 0.15;
+            mainGroup.scale.set(targetScale, targetScale, targetScale);
+
+            mainGroup.position.y = -scrollFactor * 2;
+
+            targetX += (mouseX - targetX) * 0.05;
+            targetY += (mouseY - targetY) * 0.05;
+
+            mainGroup.rotation.y += targetX;
+            mainGroup.rotation.x += targetY;
+
+            particleSystem.rotation.y = elapsedTime * 0.02;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            if (window.innerWidth < 600) {
+                camera.position.z = 24;
+            } else {
+                camera.position.z = 18;
+            }
+        });
+
+        if (window.innerWidth < 600) {
+            camera.position.z = 24;
+        }
+    </script>
+</body>
+</html>
