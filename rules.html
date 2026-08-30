@@ -120,17 +120,19 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .social-btn {
             position: relative;
             color: #fff;
             text-decoration: none;
-            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            padding: 10px 18px;
+            padding: 8px 14px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -148,6 +150,16 @@
             box-shadow: 0 0 20px rgba(217, 119, 36, 0.35);
             background: rgba(217, 119, 36, 0.15);
             transform: translateY(-2px);
+        }
+
+        .social-btn.leader {
+            border-color: rgba(217, 119, 36, 0.5);
+            background: rgba(217, 119, 36, 0.12);
+        }
+
+        .social-btn.leader:hover {
+            background: rgba(217, 119, 36, 0.25);
+            box-shadow: 0 0 30px rgba(217, 119, 36, 0.5);
         }
 
         .content-layer {
@@ -177,7 +189,7 @@
             border-radius: 28px;
             padding: clamp(25px, 5vw, 60px);
             width: 100%;
-            max-width: 920px;
+            max-width: 1100px;
             box-shadow: 
                 0 30px 60px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.3),
@@ -303,6 +315,23 @@
             max-width: 180px;
         }
 
+        .btn-cta.leader {
+            background: linear-gradient(135deg, #c8681e 0%, #ffd49b 25%, #a64f11 50%, #f7b267 75%, #8c430e 100%);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 50px;
+        }
+
+        .btn-group .btn-cta {
+            max-width: 260px;
+            margin: 0;
+        }
+
         /* Rules Navigation */
         .rules-nav {
             display: flex;
@@ -421,12 +450,13 @@
                 padding: 15px 4%;
             }
             .social-links {
-                gap: 6px;
+                gap: 4px;
             }
             .social-btn {
-                padding: 8px 12px;
+                padding: 6px 10px;
                 letter-spacing: 1px;
-                font-size: 0.65rem;
+                font-size: 0.55rem;
+                border-radius: 8px;
             }
             section {
                 padding: 90px 0 40px 0;
@@ -434,6 +464,10 @@
             .rules-nav a {
                 font-size: 0.6rem;
                 padding: 6px 12px;
+            }
+            .btn-group .btn-cta {
+                max-width: 100%;
+                width: 100%;
             }
         }
     </style>
@@ -452,6 +486,7 @@
         </a>
         <div class="social-links">
             <a href="index.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ГЛАВНАЯ</a>
+            <a href="rules_leader.html" class="social-btn leader">👑 ДЛЯ ЛИДЕРОВ</a>
             <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
             <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
             <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="social-btn">Discord</a>
@@ -460,7 +495,7 @@
 
     <div class="content-layer">
         <section id="rules">
-            <div class="glass-card" style="max-width: 1100px;">
+            <div class="glass-card">
                 <div class="badge">📜 ПРАВИЛА ПРОЕКТА</div>
                 <h1 class="title-primary" style="text-align: center;">ПОЛЬЗОВАТЕЛЬСКОЕ <span class="title-gold">СОГЛАШЕНИЕ</span></h1>
                 <p class="description" style="text-align: center; margin-bottom: 30px;">
@@ -990,9 +1025,12 @@
 
                 </div>
 
-                <div style="text-align: center; margin-top: 50px;">
-                    <a href="index.html" class="btn-cta" style="max-width: 300px; text-decoration: none; margin: 0 auto;">
-                        <span>ВЕРНУТЬСЯ НА ГЛАВНУЮ</span>
+                <div class="btn-group">
+                    <a href="index.html" class="btn-cta" style="text-decoration: none;">
+                        <span>ГЛАВНАЯ</span>
+                    </a>
+                    <a href="rules_leader.html" class="btn-cta leader" style="text-decoration: none;">
+                        <span>👑 ДЛЯ ЛИДЕРОВ</span>
                     </a>
                 </div>
             </div>

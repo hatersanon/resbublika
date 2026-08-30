@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Правила Лидера и Зама — РЕСПУБЛИКА RP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --gold-primary: #d97724;
+            --gold-light: #ffc885;
+            --gold-dark: #8c430e;
+            --gold-gradient: linear-gradient(135deg, #c8681e 0%, #ffd49b 25%, #a64f11 50%, #f7b267 75%, #8c430e 100%);
+            --gold-glow: rgba(217, 119, 36, 0.4);
+            --bg-dark: #050608;
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            position: relative;
+            width: 100%;
+            overflow-x: hidden;
+            background: var(--bg-dark);
+            line-height: 1.6;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(217, 119, 36, 0.08) 0%, transparent 70%),
+                radial-gradient(circle at 50% 80%, rgba(5, 6, 8, 0.85) 0%, rgba(5, 6, 8, 0.95) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 6%;
+            background: rgba(5, 6, 8, 0.45);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-emblem {
+            width: 14px;
+            height: 14px;
+            background: var(--gold-gradient);
+            transform: rotate(45deg);
+            box-shadow: 0 0 15px var(--gold-primary);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 900;
+            letter-spacing: 5px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(217, 119, 36, 0.3);
+            white-space: nowrap;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .social-btn {
+            position: relative;
+            color: #fff;
+            text-decoration: none;
+            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-btn:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.35);
+            background: rgba(217, 119, 36, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 0 60px 0;
+            position: relative;
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(15, 18, 26, 0.35) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border-radius: 28px;
+            padding: clamp(25px, 5vw, 60px);
+            width: 100%;
+            max-width: 1100px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(217, 119, 36, 0.08);
+            text-align: left;
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(217, 119, 36, 0.45);
+            box-shadow: 
+                0 35px 70px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                0 0 30px rgba(217, 119, 36, 0.2);
+        }
+
+        .glass-card:hover::after {
+            left: 100%;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: rgba(217, 119, 36, 0.15);
+            border: 1px solid rgba(217, 119, 36, 0.45);
+            color: var(--gold-light);
+            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(217, 119, 36, 0.2);
+        }
+
+        .title-primary {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.2rem, 7vw, 4.2rem);
+            font-weight: 900;
+            letter-spacing: clamp(4px, 1.5vw, 12px);
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #ffffff 40%, rgba(255, 255, 255, 0.55) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
+        }
+
+        .title-gold {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+            line-height: 1.85;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin: 0 auto 40px auto;
+            max-width: 750px;
+            text-align: center;
+        }
+
+        .description strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .btn-cta {
+            position: relative;
+            padding: clamp(12px, 2vw, 18px) clamp(25px, 4vw, 45px);
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #050608;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 35px rgba(217, 119, 36, 0.45);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
+            max-width: 280px;
+            width: 100%;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(217, 119, 36, 0.7);
+        }
+
+        .rules-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .rules-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.03);
+            text-transform: uppercase;
+        }
+
+        .rules-nav a:hover {
+            border-color: var(--gold-primary);
+            color: #fff;
+            background: rgba(217, 119, 36, 0.15);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.2);
+        }
+
+        .rules-content {
+            color: var(--text-main);
+        }
+
+        .rules-content h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2.4rem);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            color: #fff;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(217, 119, 36, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .rules-content h3 {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 12px;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+        }
+
+        .rules-content h4 {
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .rules-content p {
+            margin-bottom: 12px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+        }
+
+        .rules-content ul, .rules-content ol {
+            margin-left: 20px;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+            line-height: 1.8;
+        }
+
+        .rules-content ul li, .rules-content ol li {
+            margin-bottom: 6px;
+        }
+
+        .rules-content .rule-block {
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid var(--gold-primary);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .rules-content .rule-block strong {
+            color: #fff;
+        }
+
+        .rules-content .punishment {
+            background: rgba(217, 119, 36, 0.08);
+            border: 1px solid rgba(217, 119, 36, 0.2);
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin: 12px 0 20px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .rules-content .punishment strong {
+            color: var(--gold-light);
+        }
+
+        .rules-content .table-wrap {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .rules-content table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+            color: var(--text-muted);
+            min-width: 500px;
+        }
+
+        .rules-content table th {
+            background: rgba(217, 119, 36, 0.2);
+            color: #fff;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid rgba(217, 119, 36, 0.3);
+            font-weight: 700;
+        }
+
+        .rules-content table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .rules-content table tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(5, 6, 8, 0.9);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 15px 4%;
+            }
+            .social-links {
+                gap: 6px;
+            }
+            .social-btn {
+                padding: 8px 12px;
+                letter-spacing: 1px;
+                font-size: 0.65rem;
+            }
+            section {
+                padding: 90px 0 40px 0;
+            }
+            .rules-nav a {
+                font-size: 0.55rem;
+                padding: 6px 10px;
+            }
+            .rules-content table {
+                min-width: 400px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Background -->
+    <canvas id="canvas3d"></canvas>
+    <div class="vignette"></div>
+
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="logo-container">
+            <div class="logo-emblem"></div>
+            <div class="logo-text">РЕСПУБЛИКА</div>
+        </a>
+        <div class="social-links">
+            <a href="index.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ГЛАВНАЯ</a>
+            <a href="rules.html" class="social-btn">ПРАВИЛА</a>
+            <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
+            <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
+            <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="social-btn">Discord</a>
+        </div>
+    </header>
+
+    <div class="content-layer">
+        <section id="rules">
+            <div class="glass-card">
+                <div class="badge">👑 ПРАВИЛА РУКОВОДСТВА</div>
+                <h1 class="title-primary" style="text-align: center;">ПРАВИЛА ЛИДЕРА <span class="title-gold">И ЗАМЕСТИТЕЛЯ</span></h1>
+                <p class="description" style="text-align: center; margin-bottom: 30px;">
+                    <strong>«РЕСПУБЛИКА RP»</strong> — свод правил для руководящего состава фракций.
+                </p>
+
+                <!-- Navigation -->
+                <div class="rules-nav">
+                    <a href="#section1">1. Основные</a>
+                    <a href="#section2">2. Обязанности</a>
+                    <a href="#section3">3. Требования</a>
+                    <a href="#section4">4. Запрещено</a>
+                    <a href="#section5">5. Увольнения</a>
+                    <a href="#section6">6. Прочее</a>
+                    <a href="#section7">7. Онлайн</a>
+                </div>
+
+                <div class="rules-content">
+
+                    <!-- SECTION 1 -->
+                    <h2 id="section1">РАЗДЕЛ 1. ОСНОВНЫЕ ПОЛОЖЕНИЯ</h2>
+                    
+                    <p><strong>1.1.</strong> Данные правила могут быть изменены в любой момент по решению Администрации проекта.</p>
+                    <p><strong>1.2.</strong> Незнание данных правил не освобождает лидера или заместителя фракции от ответственности за их нарушение.</p>
+                    <p><strong>1.3.</strong> Администрация проекта имеет полное право наказывать лидеров организаций за нарушение данных правил на своё усмотрение, вплоть до снятия с должности, вне зависимости от количества выговоров или предупреждений.</p>
+                    
+                    <p><strong>1.4.</strong> Лидер фракции назначается Администрацией по одному из следующих способов:</p>
+                    <ul>
+                        <li>По собеседованию через Discord после подачи заявки</li>
+                        <li>После того, как лидер отстоял свой срок и полномочия были переданы заместителю, по усмотрению Администрации проекта</li>
+                        <li>Иными способами, по усмотрению Администрации проекта (например, обзвон старших рангов структуры)</li>
+                    </ul>
+                    
+                    <p><strong>1.5.</strong> Минимальный срок для лидера или заместителя фракции составляет 30 дней, а максимальный — 90 дней. По истечении одного месяца возможно продление срока при условии продуктивной работы.</p>
+                    <p><strong>1.6.</strong> Минимальный онлайн лидеров/заместителей указан в разделе 7.</p>
+                    <p><strong>1.7.</strong> После ухода с поста лидера/заместителя по собственному желанию или по окончанию срока, игрок может подать заявку на пост лидера только спустя 15 дней. Старшая администрация вправе изменить этот срок на своё усмотрение.</p>
+                    <p><strong>1.8.</strong> Минимальный возраст лидера фракции: не менее 16 лет.</p>
+                    <p><strong>1.9.</strong> Количество заместителей зависит от количества игроков во фракции (1 заместитель на 15 игроков, т.е. если во фракции 30 игроков, то должно быть 2 заместителя).</p>
+                    <p><strong>1.10.</strong> Лидер/заместитель имеет право раз в срок взять отпуск от 7 дней до 14 дней. Все дни отпуска и отгулов не засчитываются в основной срок.</p>
+                    <p><strong>1.10.1.</strong> Лидер/заместитель имеет право взять отгул лишь в том случае, если во время его кратковременного отсутствия будет кому его подменить (другой зам или лидер фракции). Все дни отпуска и отгулов не засчитываются в основной срок.</p>
+                    <p><strong>1.11.</strong> После успешного срока управляющий имеет право пригласить лидера в администрацию.</p>
+                    <p><strong>1.12.</strong> Лидер имеет возможность рекомендовать Администрации — внести изменения (улучшения) в действующий устав фракции.</p>
+                    <p><strong>1.13.</strong> При снятии лидера/заместителя за нарушение правил лидера (Н.П.Л.), администрация самостоятельно выдвигает ограничения на его дальнейшее становление на лидерские/заместительские посты.</p>
+                    <p><strong>1.14.</strong> Лидер или заместитель фракции обязан предоставить свод правил структурных подразделений организации (режим работы, устав специальных подразделений организации, рабочие часы организации, предложения по улучшению работы организации) в течение 3 дней после вступления в должность, если такие сведения не были ранее предоставлены.</p>
+
+                    <!-- SECTION 2 -->
+                    <h2 id="section2">РАЗДЕЛ 2. ОБЯЗАННОСТИ ЛИДЕРОВ И ЗАМЕСТИТЕЛЕЙ</h2>
+                    
+                    <h3>2.1. Обязанности лидера фракции</h3>
+                    <ul>
+                        <li><strong>2.1.1.</strong> Поддерживать уровень ролевой игры RP во фракции на максимально возможном уровне</li>
+                        <li><strong>2.1.2.</strong> Организовывать не менее двух фракционных RP мероприятий, связанных с деятельностью фракции</li>
+                        <li><strong>2.1.3.</strong> Поддерживать высокую активность, онлайн и достаточную численность сотрудников для функционирования фракции</li>
+                        <li><strong>2.1.4.</strong> Контролировать профессиональный уровень участников, заниматься их обучением и нести полную ответственность за их действия</li>
+                        <li><strong>2.1.5.</strong> Своевременно публиковать отчеты в разделе «отчеты-лидеров»</li>
+                        <li><strong>2.1.6.</strong> Проводить ежедневные планерки (сходки для криминальных организаций) для постановки задач и решения проблем</li>
+                        <li><strong>2.1.7.</strong> Обеспечивать фракцию необходимым снаряжением для ведения деятельности</li>
+                        <li><strong>2.1.8.</strong> Обучать новых игроков основам ролевой игры и погружать в специфику фракции</li>
+                        <li><strong>2.1.9.</strong> Оперативно реагировать на жалобы относительно сотрудников фракции</li>
+                        <li><strong>2.1.10.</strong> Разрешать конфликтные ситуации между фракциями и подчиненными</li>
+                        <li><strong>2.1.11.</strong> Иметь микрофон для решения проблем или задач, которые могут поставить перед ним Администрация проекта</li>
+                        <li><strong>2.1.12.</strong> Организовывать минимум 2 набора персонала ежедневно (кроме ОПГ)</li>
+                        <li><strong>2.1.13.</strong> Контролировать дисциплину и поведение персонала с возможностью делегирования заместителю</li>
+                        <li><strong>2.1.14.</strong> Поддерживать дружескую, рабочую и комфортную атмосферу в коллективе</li>
+                        <li><strong>2.1.15.</strong> Нести полную ответственность за инвентарь, выданный для RP; при нецелевом использовании лидер получит наказание</li>
+                    </ul>
+
+                    <h3>2.2. Обязанности заместителя фракции</h3>
+                    <ul>
+                        <li><strong>2.2.1.</strong> Поддерживать высокий уровень RP и активности во фракции</li>
+                        <li><strong>2.2.2.</strong> Организовывать не менее двух фракционных RP мероприятий, связанных с деятельностью фракции</li>
+                        <li><strong>2.2.3.</strong> Содействовать профессиональному развитию участников фракции</li>
+                        <li><strong>2.2.4.</strong> Регулярно участвовать в жизни игрового сервера и фракции</li>
+                        <li><strong>2.2.5.</strong> Своевременно публиковать отчеты в разделе «отчеты-заместителей»</li>
+                        <li><strong>2.2.6.</strong> Проводить ежедневные планерки (сходки у криминальных организаций) для обсуждения целей, задач и проблем</li>
+                        <li><strong>2.2.7.</strong> Исполнять обязанности лидера во время его отсутствия</li>
+                        <li><strong>2.2.8.</strong> Обеспечивать фракцию необходимыми ресурсами для деятельности</li>
+                        <li><strong>2.2.9.</strong> Обучать игроков RP режиму игры и погружать их в ролевую фракционную роль</li>
+                        <li><strong>2.2.10.</strong> Рассматривать жалобы на сотрудников и оперативно реагировать на них</li>
+                        <li><strong>2.2.11.</strong> Помогать лидеру в проведении не менее 2 наборов в день (кроме ОПГ)</li>
+                        <li><strong>2.2.12.</strong> Урегулировать конфликты между фракциями и подопечными</li>
+                        <li><strong>2.2.13.</strong> Нести полную ответственность за инвентарь, выданный для RP; при нецелевом использовании заместитель получит наказание</li>
+                    </ul>
+
+                    <!-- SECTION 3 -->
+                    <h2 id="section3">РАЗДЕЛ 3. ТРЕБОВАНИЯ К ЛИДЕРАМ И ЗАМЕСТИТЕЛЯМ</h2>
+                    
+                    <p><strong>3.1.</strong> Лидерам быть онлайн не менее 4 часов в сутки, заместителям не менее 3 часов в сутки (См. раздел 7).</p>
+                    <p><strong>3.2.</strong> Знать и соблюдать все правила сервера и фракции, подавая пример сотрудникам.</p>
+                    <p><strong>3.3.</strong> Осуществлять контроль за поведением и дисциплиной всего состава фракции.</p>
+                    <p><strong>3.4.</strong> Регулярно участвовать в активностях сервера и фракционной жизни.</p>
+                    <p><strong>3.5.</strong> Поддерживать дружескую, рабочую и комфортную атмосферу в коллективе.</p>
+                    <p><strong>3.6.</strong> Хранить документальные подтверждения нарушений и увольнений в течение 4 суток.</p>
+                    <p><strong>3.7.</strong> Проводить комплексную проверку кандидатов перед вступлением во фракцию.</p>
+                    <p><strong>3.7.1.</strong> Основной свод по комплексной проверке в разработке.</p>
+                    <p><strong>3.8.</strong> Увольнять сотрудника по причине "Дембель" при получении военного билета (Для Армии).</p>
+                    <p><strong>3.9.</strong> Иметь микрофон для решения проблем или задач, которые могут поставить перед ним Администрация проекта.</p>
+
+                    <!-- SECTION 4 -->
+                    <h2 id="section4">РАЗДЕЛ 4. ЗАПРЕЩЕНО ЛИДЕРАМ И ЗАМЕСТИТЕЛЯМ</h2>
+                    
+                    <p><strong>4.1.</strong> Обманывать Администрацию проекта.</p>
+                    <p><strong>4.2.</strong> Нарушать правила сервера, Discord.</p>
+                    <p><strong>4.3.</strong> Провоцировать конфликты/создавать токсичные ситуации на других серверах проекта или заходить на них с целью провокаций/создания конфликтных ситуаций.</p>
+                    <p><strong>4.4.</strong> Повышать, увольнять или принимать за реальные деньги, игровое имущество или игровую валюту (ЧС или наказание от Старшей Администрации).</p>
+                    <p><strong>4.5.</strong> Увольнять сотрудников по причинам, не указанным в разделе 5, или по NonRP причинам.</p>
+                    <p><strong>4.6.</strong> Принимать людей из отпуска/резерв, если игрок вступил в другую фракцию во время отпуска/резерва.</p>
+                    <p><strong>4.7.</strong> Принимать игрока, уволенного из вашей фракции в течение последних 72 часов (запись в трудовой).</p>
+                    <p><strong>4.8.</strong> Инициировать РП-ситуации для снятия лидера/зама с поста (снимать может только Администрация). Исключение: РП уход лидера.</p>
+                    <p><strong>4.9.</strong> Играть с мультиаккаунтов.</p>
+                    <p><strong>4.10.</strong> Работать на других работах в рабочее время (для государственных фракций).</p>
+                    <p><strong>4.11.</strong> Работать на других работах в форме. Исключение: ОПГ.</p>
+                    <p><strong>4.12.</strong> Использовать причину ЧС без согласования со следящей Администрацией.</p>
+                    <p><strong>4.13.</strong> Принимать игроков с NonRP-никами.</p>
+                    <p><strong>4.14.</strong> Создавать личные группы VK/Telegram/сервера Discord и приглашать туда игроков проекта.</p>
+                    <p><strong>4.15.</strong> Увольнять сотрудника без доказательств нарушения.</p>
+                    <p><strong>4.16.</strong> Играть в казино в форме. Исключение: ОПГ.</p>
+                    <p><strong>4.17.</strong> Осуществлять любые временные повышения (включая в рамках РП).</p>
+                    <p><strong>4.18.</strong> Переодевать игроков с помощью изменения ранга. Исключение: РП повышение.</p>
+                    <p><strong>4.19.</strong> Принимать игроков вне набора. Исключение: Контрактная служба, перевод, отпуск, резерв, вербовка для криминальных организаций.</p>
+                    <p><strong>4.20.</strong> Допускать панибратство ("блат") — любые формы фаворитизма, предоставление привилегий, ускоренных повышений, мягких наказаний или иных преимуществ игрокам, с которыми лидер или заместитель состоит в дружеских или иных внеслужебных отношениях, в ущерб остальным сотрудникам фракции.</p>
+                    <p><strong>4.21.</strong> NonRP оскорблять игроков в игре/VK/Discord/TG (включая личные сообщения).</p>
+                    <p><strong>4.22.</strong> Находиться в РП-сне в рабочей форме более 15 минут.</p>
+                    <p><strong>4.23.</strong> Публиковать/распространять информацию из лидерских каналов или полученную от Администрации.</p>
+                    <p><strong>4.24.</strong> Вводить и использовать систему денежных штрафов/взысканий. Исключение: ОПГ.</p>
+                    <p><strong>4.25.</strong> Понижать сотрудников за нарушения фракционных правил. Исключение: ОПГ.</p>
+                    <p><strong>4.26.</strong> Запрещать сотрудникам участвовать в мероприятиях Администрации проекта.</p>
+                    <p><strong>4.27.</strong> Принимать во фракцию за игровую валюту, за исключением ОПГ при строгом соблюдении установленного лимита в 100 000 рублей.</p>
+                    <p><strong>4.28.</strong> Изменять критерии повышения во фракции (меняет только Старшая Администрация).</p>
+                    <p><strong>4.29.</strong> Вводить подразделения без согласования с Администрацией (только с разрешения Следящей Администрации).</p>
+                    <p><strong>4.30.</strong> Отказывать в повышении без причин, не указанных в правилах/системе повышений.</p>
+                    <p><strong>4.31.</strong> Принимать по причине "Перевод", если с записи в трудовой прошло более 10 дней.</p>
+                    <p><strong>4.32.</strong> Находиться на территории других фракций (дом, склад) без одобрения следящей администрации. Исключение: облавы, рейды, похищения, мероприятия, расследования (согласованные с Администрацией).</p>
+                    <p><strong>4.33.</strong> Устанавливать правила организации, нарушающие правила проекта.</p>
+                    <p><strong>4.34.</strong> Занимать лидерский/административный пост на другом проекте.</p>
+                    <p><strong>4.35.</strong> Критиковать действия Администрации проекта.</p>
+                    <p><strong>4.36.</strong> Лидерам/заместителям МВД, ГИБДД и Армии принимать людей с наличием розысков и штрафов.</p>
+                    <p><strong>4.37.</strong> Использовать транспортное средство в рабочее время без разрешения Управляющего сервера. Исключение: Мероприятия; Сотрудники ОПГ.</p>
+                    <p><strong>4.38.</strong> Рассматривать жалобы в личных сообщениях (должны рассматриваться официально).</p>
+
+                    <!-- SECTION 5 -->
+                    <h2 id="section5">РАЗДЕЛ 5. ПРИЧИНЫ УВОЛЬНЕНИЯ И ОГРАНИЧЕНИЯ</h2>
+                    
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Причина увольнения</th>
+                                    <th>Ограничение</th>
+                                    <th>Описание</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>По собственному желанию (ПСЖ)</strong><br><span style="font-size:0.8rem;color:#94a3b8;">для ОПГ — «отошел от дел»</span></td>
+                                    <td>Без ограничений</td>
+                                    <td>Добровольный уход с места работы.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Профнепригодность</strong><br><span style="font-size:0.8rem;color:#94a3b8;">для ОПГ — «не оправдал доверие»</span></td>
+                                    <td>48 часов</td>
+                                    <td>Совокупность психофизических качеств, не позволяющих выполнять работу (систематическое нарушение правил, непонимание системы фракции).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Нарушение устава</strong><br><span style="font-size:0.8rem;color:#94a3b8;">для ОПГ — «нарушение понятий»</span></td>
+                                    <td>72 часа</td>
+                                    <td>Нарушение существующих актов, понятий, законов фракции в РП процессе.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Отпуск</strong></td>
+                                    <td>Согласно сроку отпуска (ранг сохраняется)</td>
+                                    <td>Временное освобождение от работы на определенный период для отдыха/иных целей с сохранением места работы.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Перевод</strong></td>
+                                    <td>Без ограничений (но с потерей ранга во фракции)</td>
+                                    <td>Постоянное или временное изменение трудовой функции, переход в новые структуры для дальнейшей работы.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Резерв</strong></td>
+                                    <td>Без ограничений (но с потерей ранга при восстановлении)</td>
+                                    <td>Удержание специалиста на гражданской основе с последующим возвращением.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Дембель</strong><br><span style="font-size:0.8rem;color:#94a3b8;">только для Армии</span></td>
+                                    <td>Без ограничений</td>
+                                    <td>Процесс резервации после прохождения воинской службы на случай масштабных боевых действий.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Неактив</strong></td>
+                                    <td>72 часа</td>
+                                    <td>Долгое отсутствие сотрудника без предупреждения (увольнение после 4-х дней неактива без предупреждения лидера/зама).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Чёрный список (ЧС)</strong></td>
+                                    <td>Навсегда (только в ту конкретную фракцию)</td>
+                                    <td>Список лиц, чья деятельность нанесла ущерб организации. Запрет на вступление действует навсегда.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Срок</strong></td>
+                                    <td>Без ограничений</td>
+                                    <td>Завершение срока лидера/заместителя приравнивается к ПСЖ.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>НПЛ</strong><br><span style="font-size:0.8rem;color:#94a3b8;">Нарушение правил лидера</span></td>
+                                    <td>72 часа</td>
+                                    <td>Приравнивается к нарушению устава; применяется за систематические или грубые нарушения настоящих правил.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- SECTION 6 -->
+                    <h2 id="section6">РАЗДЕЛ 6. ПРОЧЕЕ</h2>
+                    
+                    <p><strong>6.1.</strong> Максимальное количество предупреждений для личного состава составляет: 2 Строгих выговора.</p>
+                    <p><strong>6.2.</strong> Лидеры и их заместители полностью отвечают за свой состав. За частые нарушения со стороны своего состава лидер будет наказан.</p>
+                    <p><strong>6.3.</strong> При вступлении в Армию на контрактную службу, с имеющимся военным билетом, игрок получает сразу 3 ранг.</p>
+                    <p><strong>6.4.</strong> Срок временно исполняющего обязанности (ВРИО) лидера — 14 дней.</p>
+                    <p><strong>6.5.</strong> При получении максимального числа выговоров (3/3 у лидера и 2/2 заместителя лидера) будет увольнение. Устное предупреждение подразумевает дальнейший выговор.</p>
+                    
+                    <p><strong>6.6.</strong> Переводы доступны для всех фракций, но с потерей ранга:</p>
+                    <ul>
+                        <li>▸ с МВД на Армию: -1 ранг</li>
+                        <li>▸ с Армии на МВД: -1 ранг</li>
+                        <li>▸ с ГИБДД на МВД: Без потери ранга</li>
+                        <li>▸ с МВД на ГИБДД: Без потери ранга</li>
+                        <li>▸ с ГИБДД на Армию: -1 ранг</li>
+                        <li>▸ с Армии на ГИБДД: -1 ранг</li>
+                    </ul>
+                    
+                    <p><strong>6.7.</strong> Лидеры фракции имеют право осуществлять "поблажки" при принятии отчётов (данное правило действует на тот случай, если сотруднику фракции не хватает несущественного критерия к повышению или на скриншотах большие или маленькие промежутки).</p>
+                    <p><strong>6.8.</strong> Лидеры фракции имеют право не повышать сотрудника, если он получил строгий выговор. Сотрудник готовит новый отчёт на следующий раз.</p>
+                    <p><strong>6.9.</strong> Лидер или заместитель могут отказать в принятии во фракцию в случае неадекватного поведения, агрессии и провокаций.</p>
+                    <p><strong>6.10.</strong> Лидер или заместитель не должны принимать отчёт, оформленный не по форме.</p>
+                    <p><strong>6.11.</strong> В случае получения выговора сотрудником, в течение 7 дней с момента получения и до фактической отработки этих дней лидер или заместитель вправе отказать сотруднику в переводе.</p>
+                    <p><strong>6.12.</strong> Если у игрока в трудовой причине увольнения "перевод", ему даётся 10 дней на то, чтобы вступить во фракцию. Если игрок не вступает во фракцию за 10 дней, перевод будет считаться недействительным.</p>
+                    <p><strong>6.13.</strong> Лидер имеет право не делать отчёты в выходные дни (суббота, воскресенье). Однако заместитель должен подменить лидера на это время.</p>
+                    <p><strong>6.14.</strong> Лидер или заместитель имеет право выдавать сотрудникам фракции отпуск до 14 дней один раз в месяц.</p>
+                    <p><strong>6.15.</strong> Лидер или заместитель имеет право выдавать ЧС с разрешения администрации в случае, если человек имеет более 5 нарушений устава или понятий данной фракции.</p>
+                    <p><strong>6.16.</strong> Наборы во фракцию проводятся в период с 05:00 до 00:00 по МСК.</p>
+                    <p><strong>6.17.</strong> Наборы во фракцию:</p>
+                    <ul>
+                        <li>▸ Между наборами разных фракций должен быть интервал минимум 10 минут (от конца до начала другого)</li>
+                        <li>▸ Между наборами одной фракции — минимум 20 минут (от конца первого до начала второго)</li>
+                    </ul>
+                    <p><strong>6.18.</strong> Лидер и заместитель государственной организации обязаны перед приёмом во фракцию проверить наличие медкнижки у человека, который пришёл на набор (отыгровка по RP и наличие в инвентаре).</p>
+                    <p><strong>6.19.</strong> Максимальный срок отгулов у сотрудников не должен превышать 2 часа в день. Максимальное количество отгулов — 3 в неделю.</p>
+
+                    <!-- SECTION 7 -->
+                    <h2 id="section7">РАЗДЕЛ 7. МИНИМАЛЬНЫЙ ОНЛАЙН ЛИДЕРОВ/ЗАМЕСТИТЕЛЕЙ</h2>
+                    
+                    <p><strong>7.1.</strong> Для Лидеров минимальный онлайн составляет <strong style="color:#fff;">4 часа в сутки</strong>; для Заместителей — <strong style="color:#fff;">3 часа в сутки</strong>. Данное требование обязательно для всех фракций: ЦГБ, МВД, ГИБДД, ОПГ, Армия.</p>
+
+                </div>
+
+                <div style="text-align: center; margin-top: 50px;">
+                    <a href="index.html" class="btn-cta" style="max-width: 300px; text-decoration: none; margin: 0 auto;">
+                        <span>ВЕРНУТЬСЯ НА ГЛАВНУЮ</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        &copy; 2026 РЕСПУБЛИКА ROLE PLAY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+    </footer>
+
+    <!-- 3D Script -->
+    <script>
+        const canvas = document.getElementById('canvas3d');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 18;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        const outerGeo = new THREE.IcosahedronGeometry(7, 3);
+        const wireframeGeo = new THREE.WireframeGeometry(outerGeo);
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xd97724,
+            transparent: true,
+            opacity: 0.4,
+        });
+        const goldenWebSphere = new THREE.LineSegments(wireframeGeo, lineMaterial);
+        mainGroup.add(goldenWebSphere);
+
+        const vertices = outerGeo.attributes.position.array;
+        const dotsGeo = new THREE.BufferGeometry();
+        dotsGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const dotsMaterial = new THREE.PointsMaterial({
+            color: 0xffc885,
+            size: 0.18,
+            transparent: true,
+            opacity: 0.7
+        });
+        const dotsMesh = new THREE.Points(dotsGeo, dotsMaterial);
+        mainGroup.add(dotsMesh);
+
+        const innerGeo = new THREE.IcosahedronGeometry(4.2, 2);
+        const innerMat = new THREE.MeshBasicMaterial({
+            color: 0x8c430e,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.2
+        });
+        const innerSphere = new THREE.Mesh(innerGeo, innerMat);
+        mainGroup.add(innerSphere);
+
+        function createRing(radius, tube, color) {
+            const ringGeo = new THREE.TorusGeometry(radius, tube, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: color, wireframe: true, transparent: true, opacity: 0.3 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            return ring;
+        }
+
+        const ring1 = createRing(9.5, 0.04, 0xd97724);
+        ring1.rotation.x = Math.PI / 3;
+        mainGroup.add(ring1);
+
+        const ring2 = createRing(11, 0.02, 0xffc885);
+        ring2.rotation.y = Math.PI / 4;
+        mainGroup.add(ring2);
+
+        const particleCount = window.innerWidth < 600 ? 100 : 200;
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCoords = new Float32Array(particleCount * 3);
+        for(let i = 0; i < particleCount * 3; i++) {
+            particleCoords[i] = (Math.random() - 0.5) * 45;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particleCoords, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xd97724,
+            size: 0.08,
+            transparent: true,
+            opacity: 0.4
+        });
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
+
+        let targetX = 0;
+        let targetY = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function onPointerMove(e) {
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            if (x && y) {
+                mouseX = (x - window.innerWidth / 2) * 0.0006;
+                mouseY = (y - window.innerHeight / 2) * 0.0006;
+            }
+        }
+
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('touchmove', onPointerMove);
+
+        let scrollY = 0;
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            goldenWebSphere.rotation.y = elapsedTime * 0.1;
+            goldenWebSphere.rotation.x = elapsedTime * 0.05;
+
+            dotsMesh.rotation.y = elapsedTime * 0.1;
+            dotsMesh.rotation.x = elapsedTime * 0.05;
+
+            innerSphere.rotation.y = -elapsedTime * 0.15;
+            ring1.rotation.z = elapsedTime * 0.08;
+            ring2.rotation.x = elapsedTime * 0.1;
+
+            const scrollFactor = scrollY * 0.0015;
+
+            mainGroup.rotation.y = scrollFactor * 1.2;
+            mainGroup.rotation.x = scrollFactor * 0.6;
+            
+            const targetScale = 1 + Math.sin(scrollFactor) * 0.15;
+            mainGroup.scale.set(targetScale, targetScale, targetScale);
+
+            mainGroup.position.y = -scrollFactor * 2;
+
+            targetX += (mouseX - targetX) * 0.05;
+            targetY += (mouseY - targetY) * 0.05;
+
+            mainGroup.rotation.y += targetX;
+            mainGroup.rotation.x += targetY;
+
+            particleSystem.rotation.y = elapsedTime * 0.02;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            if (window.innerWidth < 600) {
+                camera.position.z = 24;
+            } else {
+                camera.position.z = 18;
+            }
+        });
+
+        if (window.innerWidth < 600) {
+            camera.position.z = 24;
+        }
+    </script>
+</body>
+</html>

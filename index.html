@@ -123,17 +123,19 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .social-btn {
             position: relative;
             color: #fff;
             text-decoration: none;
-            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            padding: 10px 18px;
+            padding: 8px 14px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -151,6 +153,16 @@
             box-shadow: 0 0 20px rgba(217, 119, 36, 0.35);
             background: rgba(217, 119, 36, 0.15);
             transform: translateY(-2px);
+        }
+
+        .social-btn.leader {
+            border-color: rgba(217, 119, 36, 0.5);
+            background: rgba(217, 119, 36, 0.12);
+        }
+
+        .social-btn.leader:hover {
+            background: rgba(217, 119, 36, 0.25);
+            box-shadow: 0 0 30px rgba(217, 119, 36, 0.5);
         }
 
         /* Container Sections Layout */
@@ -318,6 +330,25 @@
             letter-spacing: 3px;
         }
 
+        .rules-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .rules-links .btn-cta {
+            max-width: 260px;
+            text-decoration: none;
+            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            padding: 14px 20px;
+        }
+
+        .rules-links .btn-cta.leader {
+            background: linear-gradient(135deg, #c8681e 0%, #ffd49b 25%, #a64f11 50%, #f7b267 75%, #8c430e 100%);
+        }
+
         /* Scroll Down Indicator */
         .scroll-hint {
             position: fixed;
@@ -482,15 +513,20 @@
                 padding: 15px 4%;
             }
             .social-links {
-                gap: 6px;
+                gap: 4px;
             }
             .social-btn {
-                padding: 8px 12px;
+                padding: 6px 10px;
                 letter-spacing: 1px;
-                font-size: 0.65rem;
+                font-size: 0.55rem;
+                border-radius: 8px;
             }
             section {
                 padding: 90px 0 40px 0;
+            }
+            .rules-links .btn-cta {
+                max-width: 100%;
+                width: 100%;
             }
         }
     </style>
@@ -509,6 +545,7 @@
         </a>
         <div class="social-links">
             <a href="rules.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ПРАВИЛА</a>
+            <a href="rules_leader.html" class="social-btn leader">👑 ДЛЯ ЛИДЕРОВ</a>
             <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
             <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
             <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="social-btn">Discord</a>
@@ -569,6 +606,15 @@
                     </a>
                     <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="btn-cta" style="max-width: 260px; text-decoration: none;">
                         <span>DISCORD</span>
+                    </a>
+                </div>
+                
+                <div class="rules-links">
+                    <a href="rules.html" class="btn-cta" style="text-decoration: none;">
+                        <span>📜 ПРАВИЛА ПРОЕКТА</span>
+                    </a>
+                    <a href="rules_leader.html" class="btn-cta leader" style="text-decoration: none;">
+                        <span>👑 ПРАВИЛА ЛИДЕРОВ</span>
                     </a>
                 </div>
             </div>
