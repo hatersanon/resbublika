@@ -781,13 +781,15 @@
                     <strong>Кодекс об административных правонарушениях (КоАП)</strong> — выбирайте раздел для просмотра.
                 </p>
 
+                <!-- Исправленный порядок вкладок: 1, 2, 3, 4 по порядку -->
                 <div class="tab-nav">
-                    <button class="tab-btn active" data-tab="tab1">Общественный порядок</button>
-                    <button class="tab-btn" data-tab="tab2">Имущество / Режим</button>
-                    <button class="tab-btn" data-tab="tab3">Документы / Секретность</button>
-                    <button class="tab-btn" data-tab="tab4">Дорожные нарушения (ПДД)</button>
+                    <button class="tab-btn active" data-tab="tab1">1. Общественный порядок</button>
+                    <button class="tab-btn" data-tab="tab4">2. Дорожные нарушения (ПДД)</button>
+                    <button class="tab-btn" data-tab="tab2">3. Имущество / Режим</button>
+                    <button class="tab-btn" data-tab="tab3">4. Документы / Секретность</button>
                 </div>
 
+                <!-- TAB 1: Общественный порядок (1.Х) -->
                 <div class="tab-content active" id="tab1">
                     <h2 class="section-title">1.Х — ОБЩЕСТВЕННЫЙ ПОРЯДОК / КОММУНИКАЦИИ</h2>
                     <table class="law-table">
@@ -818,49 +820,7 @@
                     </table>
                 </div>
 
-                <div class="tab-content" id="tab2">
-                    <h2 class="section-title">3.Х — ИМУЩЕСТВО / РЕЖИМ</h2>
-                    <table class="law-table">
-                        <thead>
-                            <tr>
-                                <th class="col-article">Статья</th>
-                                <th class="col-desc">Описание</th>
-                                <th class="col-fine">Штраф (₽)</th>
-                                <th class="col-time">Время (мин)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td class="col-article">КоАП 3.1</td><td class="col-desc">Порча имущества (вандализм, граффити)</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 3.2</td><td class="col-desc">Попытка угона транспорта</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 3.3</td><td class="col-desc">Проникновение на охраняемый объект</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 3.4</td><td class="col-desc">Проникновение на государственный охраняемый объект</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 3.5</td><td class="col-desc">Блокирование эвакуационных выходов/препятствие эвакуации</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="tab-content" id="tab3">
-                    <h2 class="section-title">4.Х — ДОКУМЕНТЫ / СЕКРЕТНОСТЬ</h2>
-                    <table class="law-table">
-                        <thead>
-                            <tr>
-                                <th class="col-article">Статья</th>
-                                <th class="col-desc">Описание</th>
-                                <th class="col-fine">Штраф (₽)</th>
-                                <th class="col-time">Время (мин)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td class="col-article">КоАП 4.1</td><td class="col-desc">Бездействие должностного лица</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 4.2</td><td class="col-desc">Подделка документов и их использование</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 4.3</td><td class="col-desc">Заведомо ложные сведения сотруднику при разбирательстве</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 4.4</td><td class="col-desc">Разглашение служебной или коммерческой тайны</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 4.5</td><td class="col-desc">Утрата служебных документов/носителей</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                            <tr><td class="col-article">КоАП 4.6</td><td class="col-desc">Нарушение порядка работы с конфиденциальными данными</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
+                <!-- TAB 2: Дорожные нарушения (2.Х) — ПДД -->
                 <div class="tab-content" id="tab4">
                     <h2 class="section-title">2.Х — ДОРОЖНЫЕ НАРУШЕНИЯ (ПДД)</h2>
                     <table class="law-table">
@@ -903,6 +863,51 @@
                             <tr><td class="col-article">КоАП 2.28</td><td class="col-desc">Проезд через ж/д переезд при закрывающемся шлагбауме</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
                             <tr><td class="col-article">КоАП 2.29</td><td class="col-desc">Эксплуатация ТС с неисправностями</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
                             <tr><td class="col-article">КоАП 2.30</td><td class="col-desc">Обгон с выездом на трамвайные пути встречного направления</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 3: Имущество / Режим (3.Х) -->
+                <div class="tab-content" id="tab2">
+                    <h2 class="section-title">3.Х — ИМУЩЕСТВО / РЕЖИМ</h2>
+                    <table class="law-table">
+                        <thead>
+                            <tr>
+                                <th class="col-article">Статья</th>
+                                <th class="col-desc">Описание</th>
+                                <th class="col-fine">Штраф (₽)</th>
+                                <th class="col-time">Время (мин)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="col-article">КоАП 3.1</td><td class="col-desc">Порча имущества (вандализм, граффити)</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 3.2</td><td class="col-desc">Попытка угона транспорта</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 3.3</td><td class="col-desc">Проникновение на охраняемый объект</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 3.4</td><td class="col-desc">Проникновение на государственный охраняемый объект</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 3.5</td><td class="col-desc">Блокирование эвакуационных выходов/препятствие эвакуации</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 4: Документы / Секретность (4.Х) -->
+                <div class="tab-content" id="tab3">
+                    <h2 class="section-title">4.Х — ДОКУМЕНТЫ / СЕКРЕТНОСТЬ</h2>
+                    <table class="law-table">
+                        <thead>
+                            <tr>
+                                <th class="col-article">Статья</th>
+                                <th class="col-desc">Описание</th>
+                                <th class="col-fine">Штраф (₽)</th>
+                                <th class="col-time">Время (мин)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="col-article">КоАП 4.1</td><td class="col-desc">Бездействие должностного лица</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 4.2</td><td class="col-desc">Подделка документов и их использование</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 4.3</td><td class="col-desc">Заведомо ложные сведения сотруднику при разбирательстве</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 4.4</td><td class="col-desc">Разглашение служебной или коммерческой тайны</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 4.5</td><td class="col-desc">Утрата служебных документов/носителей</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
+                            <tr><td class="col-article">КоАП 4.6</td><td class="col-desc">Нарушение порядка работы с конфиденциальными данными</td><td class="col-fine">—</td><td class="col-time">—</td></tr>
                         </tbody>
                     </table>
                 </div>
