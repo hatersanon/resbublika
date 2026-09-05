@@ -293,31 +293,6 @@
             background: rgba(217, 119, 36, 0.1);
         }
 
-        .mobile-menu .menu-theme-toggle {
-            margin-top: auto;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255,255,255,0.03);
-            color: var(--text-main);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        [data-theme="light"] .mobile-menu .menu-theme-toggle {
-            background: rgba(120, 115, 105, 0.08);
-            border-color: rgba(120, 115, 105, 0.2);
-        }
-
-        .mobile-menu .menu-theme-toggle:hover {
-            border-color: var(--gold-primary);
-        }
-
         .mobile-overlay-bg {
             position: fixed;
             top: 0;
@@ -334,6 +309,37 @@
         .mobile-overlay-bg.active {
             opacity: 1;
             pointer-events: all;
+        }
+
+        .mobile-controls {
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mobile-theme-toggle {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+        }
+
+        [data-theme="light"] .mobile-theme-toggle {
+            background: rgba(120, 115, 105, 0.15);
+            border-color: rgba(120, 115, 105, 0.25);
+        }
+
+        .mobile-theme-toggle:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.2);
         }
 
         .theme-toggle {
@@ -665,17 +671,16 @@
             .theme-toggle {
                 display: none;
             }
+            .mobile-controls {
+                display: flex;
+            }
             section {
                 padding: 90px 0 40px 0;
-            }
-            .mobile-menu .theme-toggle {
-                display: flex;
-                margin-top: 10px;
             }
         }
 
         @media (min-width: 769px) {
-            .mobile-menu, .mobile-overlay-bg {
+            .mobile-menu, .mobile-overlay-bg, .mobile-controls, .mobile-theme-toggle {
                 display: none !important;
             }
         }
@@ -719,6 +724,11 @@
             .law-table .col-time {
                 width: 16%;
             }
+            .mobile-theme-toggle {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -735,28 +745,31 @@
         <div class="social-links">
             <a href="index.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ГЛАВНАЯ</a>
             <a href="rules.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ПРАВИЛА</a>
+            <a href="rules_leader.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ПРАВИЛА ЛИДЕРА</a>
             <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
             <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
             <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="social-btn">Discord</a>
             <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
         </div>
-        <div class="menu-toggle" id="menuToggle" aria-label="Открыть меню">
-            <span></span>
-            <span></span>
-            <span></span>
+        <div class="mobile-controls">
+            <button class="mobile-theme-toggle" id="mobileThemeToggle" aria-label="Переключить тему">🌙</button>
+            <div class="menu-toggle" id="menuToggle" aria-label="Открыть меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 
     <div class="mobile-overlay-bg" id="mobileOverlayBg"></div>
     <div class="mobile-menu" id="mobileMenu">
-        <a href="index.html">🏠 Главная</a>
-        <a href="rules.html">📜 Правила</a>
-        <a href="rules_leader.html">👑 Правила лидера</a>
-        <a href="laws.html">⚖️ Законы</a>
-        <a href="https://vk.ru/respublika.online" target="_blank">📱 VK</a>
-        <a href="https://t.me/respublika_rp" target="_blank">✈️ Telegram</a>
-        <a href="https://discord.gg/7nUsZ6u9t" target="_blank">💬 Discord</a>
-        <button class="menu-theme-toggle" id="mobileThemeToggle">🌙 Светлая тема</button>
+        <a href="index.html">Главная</a>
+        <a href="rules.html">Правила</a>
+        <a href="rules_leader.html">Правила лидера</a>
+        <a href="laws.html">Законы</a>
+        <a href="https://vk.ru/respublika.online" target="_blank">VK</a>
+        <a href="https://t.me/respublika_rp" target="_blank">Telegram</a>
+        <a href="https://discord.gg/7nUsZ6u9t" target="_blank">Discord</a>
     </div>
 
     <div class="content-layer">
@@ -1106,7 +1119,7 @@
             localStorage.setItem('theme', theme);
             const icon = theme === 'light' ? '🌙' : '☀️';
             themeToggle.textContent = icon;
-            mobileThemeToggle.textContent = theme === 'light' ? '🌙 Светлая тема' : '☀️ Тёмная тема';
+            mobileThemeToggle.textContent = icon;
         }
 
         function toggleTheme() {
@@ -1115,10 +1128,7 @@
         }
 
         themeToggle.addEventListener('click', toggleTheme);
-        mobileThemeToggle.addEventListener('click', () => {
-            toggleTheme();
-            if (mobileMenu.classList.contains('open')) toggleMenu();
-        });
+        mobileThemeToggle.addEventListener('click', toggleTheme);
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
         setTheme(savedTheme);
