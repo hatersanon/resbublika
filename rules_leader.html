@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
@@ -22,6 +21,45 @@
             --card-border: rgba(255, 255, 255, 0.15);
             --text-main: #e2e8f0;
             --text-muted: #94a3b8;
+            --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(15, 18, 26, 0.35) 100%);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            --btn-bg: var(--gold-gradient);
+            --btn-text: #050608;
+            --header-bg: rgba(5, 6, 8, 0.45);
+            --vignette-1: rgba(217, 119, 36, 0.08);
+            --vignette-2: rgba(5, 6, 8, 0.85);
+            --vignette-3: rgba(5, 6, 8, 0.95);
+            --badge-bg: rgba(217, 119, 36, 0.15);
+            --badge-border: rgba(217, 119, 36, 0.45);
+            --badge-color: var(--gold-light);
+            --title-gradient: linear-gradient(180deg, #ffffff 40%, rgba(255, 255, 255, 0.55) 100%);
+            --title-shadow: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
+            --table-header-bg: rgba(217, 119, 36, 0.2);
+            --table-border: rgba(217, 119, 36, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-dark: #d4d0c8;
+            --text-main: #1f1e1c;
+            --text-muted: #4a4844;
+            --glass-bg: linear-gradient(135deg, rgba(210, 205, 195, 0.75) 0%, rgba(190, 185, 175, 0.5) 100%);
+            --glass-border: rgba(120, 115, 105, 0.25);
+            --shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
+            --btn-text: #ffffff;
+            --header-bg: rgba(210, 205, 195, 0.6);
+            --vignette-1: rgba(180, 175, 165, 0.05);
+            --vignette-2: rgba(200, 195, 185, 0.5);
+            --vignette-3: rgba(190, 185, 175, 0.7);
+            --card-border: rgba(120, 115, 105, 0.15);
+            --gold-gradient: linear-gradient(135deg, #b85e1a 0%, #d9a56a 25%, #8a3f0a 50%, #c68a4a 75%, #7a370a 100%);
+            --badge-bg: rgba(180, 160, 120, 0.2);
+            --badge-border: rgba(160, 130, 80, 0.4);
+            --badge-color: #7a5a2a;
+            --title-gradient: linear-gradient(180deg, #1f1e1c 40%, rgba(60, 55, 50, 0.55) 100%);
+            --title-shadow: drop-shadow(0 10px 20px rgba(200, 195, 185, 0.8));
+            --table-header-bg: rgba(180, 160, 120, 0.15);
+            --table-border: rgba(160, 130, 80, 0.25);
         }
 
         * {
@@ -38,6 +76,7 @@
             font-family: 'Montserrat', sans-serif;
             overflow-x: hidden;
             width: 100%;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         body {
@@ -46,6 +85,7 @@
             overflow-x: hidden;
             background: var(--bg-dark);
             line-height: 1.6;
+            transition: background-color 0.3s ease;
         }
 
         #canvas3d {
@@ -65,10 +105,11 @@
             width: 100vw;
             height: 100vh;
             background: 
-                radial-gradient(circle at 50% 30%, rgba(217, 119, 36, 0.08) 0%, transparent 70%),
-                radial-gradient(circle at 50% 80%, rgba(5, 6, 8, 0.85) 0%, rgba(5, 6, 8, 0.95) 100%);
+                radial-gradient(circle at 50% 30%, var(--vignette-1) 0%, transparent 70%),
+                radial-gradient(circle at 50% 80%, var(--vignette-2) 0%, var(--vignette-3) 100%);
             z-index: 2;
             pointer-events: none;
+            transition: background 0.3s ease;
         }
 
         header {
@@ -81,11 +122,15 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 6%;
-            background: rgba(5, 6, 8, 0.45);
+            background: var(--header-bg);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] header {
+            border-bottom: 1px solid rgba(120, 115, 105, 0.2);
         }
 
         .logo-container {
@@ -143,11 +188,175 @@
             justify-content: center;
         }
 
+        [data-theme="light"] .social-btn {
+            color: #2a2825;
+            background: rgba(120, 115, 105, 0.15);
+            border: 1px solid rgba(120, 115, 105, 0.25);
+        }
+
         .social-btn:hover {
             border-color: var(--gold-primary);
             box-shadow: 0 0 20px rgba(217, 119, 36, 0.35);
             background: rgba(217, 119, 36, 0.15);
             transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 110;
+        }
+
+        [data-theme="light"] .menu-toggle {
+            background: rgba(120, 115, 105, 0.15);
+            border-color: rgba(120, 115, 105, 0.25);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 320px;
+            height: 100vh;
+            background: var(--bg-dark);
+            z-index: 105;
+            padding: 80px 30px 30px;
+            transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border-left: 1px solid var(--glass-border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        [data-theme="light"] .mobile-menu {
+            background: #d4d0c8;
+            border-left-color: rgba(120, 115, 105, 0.3);
+        }
+
+        .mobile-menu.open {
+            right: 0;
+        }
+
+        .mobile-menu a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        [data-theme="light"] .mobile-menu a {
+            background: rgba(120, 115, 105, 0.08);
+            border-color: rgba(120, 115, 105, 0.12);
+        }
+
+        .mobile-menu a:hover {
+            border-color: var(--gold-primary);
+            background: rgba(217, 119, 36, 0.1);
+        }
+
+        .mobile-menu .menu-theme-toggle {
+            margin-top: auto;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.03);
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        [data-theme="light"] .mobile-menu .menu-theme-toggle {
+            background: rgba(120, 115, 105, 0.08);
+            border-color: rgba(120, 115, 105, 0.2);
+        }
+
+        .mobile-menu .menu-theme-toggle:hover {
+            border-color: var(--gold-primary);
+        }
+
+        .mobile-overlay-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 104;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .mobile-overlay-bg.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .theme-toggle {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            color: var(--text-main);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: rgba(120, 115, 105, 0.15);
+            border-color: rgba(120, 115, 105, 0.25);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.2);
         }
 
         .content-layer {
@@ -170,8 +379,8 @@
         }
 
         .glass-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(15, 18, 26, 0.35) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
             backdrop-filter: blur(35px);
             -webkit-backdrop-filter: blur(35px);
             border-radius: 28px;
@@ -179,16 +388,20 @@
             width: 100%;
             max-width: 1100px;
             box-shadow: 
-                0 30px 60px rgba(0, 0, 0, 0.4),
+                var(--shadow),
                 inset 0 1px 0 rgba(255, 255, 255, 0.3),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.5),
                 inset 0 0 20px rgba(217, 119, 36, 0.08);
             text-align: left;
-            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, background 0.3s ease;
             position: relative;
             overflow: hidden;
             word-wrap: break-word;
             overflow-wrap: break-word;
+        }
+
+        [data-theme="light"] .glass-card {
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.05);
         }
 
         .glass-card::after {
@@ -220,9 +433,9 @@
             gap: 8px;
             padding: 8px 20px;
             border-radius: 30px;
-            background: rgba(217, 119, 36, 0.15);
-            border: 1px solid rgba(217, 119, 36, 0.45);
-            color: var(--gold-light);
+            background: var(--badge-bg);
+            border: 1px solid var(--badge-border);
+            color: var(--badge-color);
             font-size: clamp(0.65rem, 1.5vw, 0.8rem);
             font-weight: 800;
             letter-spacing: 3px;
@@ -240,10 +453,11 @@
             letter-spacing: clamp(4px, 1.5vw, 12px);
             line-height: 1.1;
             margin-bottom: 24px;
-            background: linear-gradient(180deg, #ffffff 40%, rgba(255, 255, 255, 0.55) 100%);
+            background: var(--title-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
+            filter: var(--title-shadow);
+            text-align: center;
         }
 
         .title-gold {
@@ -262,11 +476,6 @@
             text-align: center;
         }
 
-        .description strong {
-            color: #ffffff;
-            font-weight: 600;
-        }
-
         .btn-cta {
             position: relative;
             padding: clamp(12px, 2vw, 18px) clamp(25px, 4vw, 45px);
@@ -274,8 +483,8 @@
             font-weight: 900;
             letter-spacing: 3px;
             text-transform: uppercase;
-            color: #050608;
-            background: var(--gold-gradient);
+            color: var(--btn-text);
+            background: var(--btn-bg);
             border: none;
             border-radius: 14px;
             cursor: pointer;
@@ -318,9 +527,14 @@
             text-transform: uppercase;
         }
 
+        [data-theme="light"] .rules-nav a {
+            border-color: rgba(120, 115, 105, 0.15);
+            background: rgba(120, 115, 105, 0.05);
+        }
+
         .rules-nav a:hover {
             border-color: var(--gold-primary);
-            color: #fff;
+            color: var(--text-main);
             background: rgba(217, 119, 36, 0.15);
             box-shadow: 0 0 20px rgba(217, 119, 36, 0.2);
         }
@@ -334,9 +548,9 @@
             font-size: clamp(1.5rem, 4vw, 2.4rem);
             margin-top: 40px;
             margin-bottom: 20px;
-            color: #fff;
+            color: var(--text-main);
             letter-spacing: 2px;
-            border-bottom: 1px solid rgba(217, 119, 36, 0.3);
+            border-bottom: 1px solid var(--table-border);
             padding-bottom: 10px;
         }
 
@@ -349,12 +563,16 @@
             letter-spacing: 1px;
         }
 
+        [data-theme="light"] .rules-content h3 {
+            color: var(--gold-dark);
+        }
+
         .rules-content h4 {
             font-size: clamp(1rem, 1.5vw, 1.2rem);
             font-weight: 600;
             margin-top: 20px;
             margin-bottom: 10px;
-            color: #fff;
+            color: var(--text-main);
         }
 
         .rules-content p {
@@ -384,8 +602,12 @@
             border-radius: 0 12px 12px 0;
         }
 
+        [data-theme="light"] .rules-content .rule-block {
+            background: rgba(120, 115, 105, 0.05);
+        }
+
         .rules-content .rule-block strong {
-            color: #fff;
+            color: var(--text-main);
         }
 
         .rules-content .punishment {
@@ -402,6 +624,15 @@
             color: var(--gold-light);
         }
 
+        [data-theme="light"] .rules-content .punishment {
+            background: rgba(180, 160, 120, 0.1);
+            border-color: rgba(160, 130, 80, 0.25);
+        }
+
+        [data-theme="light"] .rules-content .punishment strong {
+            color: var(--gold-dark);
+        }
+
         .rules-content .table-wrap {
             overflow-x: auto;
             margin: 20px 0;
@@ -416,11 +647,11 @@
         }
 
         .rules-content table th {
-            background: rgba(217, 119, 36, 0.2);
-            color: #fff;
+            background: var(--table-header-bg);
+            color: var(--text-main);
             padding: 12px 16px;
             text-align: left;
-            border-bottom: 2px solid rgba(217, 119, 36, 0.3);
+            border-bottom: 2px solid var(--table-border);
             font-weight: 700;
         }
 
@@ -429,8 +660,16 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
+        [data-theme="light"] .rules-content table td {
+            border-bottom: 1px solid rgba(120, 115, 105, 0.15);
+        }
+
         .rules-content table tr:hover td {
             background: rgba(255,255,255,0.03);
+        }
+
+        [data-theme="light"] .rules-content table tr:hover td {
+            background: rgba(120, 115, 105, 0.05);
         }
 
         footer {
@@ -442,24 +681,63 @@
             letter-spacing: 2px;
             color: var(--text-muted);
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(5, 6, 8, 0.9);
+            background: var(--header-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             margin-top: 40px;
         }
 
-        @media (max-width: 600px) {
+        [data-theme="light"] footer {
+            border-top: 1px solid rgba(120, 115, 105, 0.15);
+        }
+
+        @media (max-width: 768px) {
             header {
                 padding: 15px 4%;
             }
             .social-links {
-                gap: 6px;
+                display: none;
             }
-            .social-btn {
-                padding: 8px 12px;
-                letter-spacing: 1px;
-                font-size: 0.65rem;
+            .menu-toggle {
+                display: flex;
+            }
+            .theme-toggle {
+                display: none;
             }
             section {
                 padding: 90px 0 40px 0;
+            }
+            .mobile-menu .theme-toggle {
+                display: flex;
+                margin-top: 10px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-menu, .mobile-overlay-bg {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 12px 4%;
+            }
+            .logo-text {
+                font-size: 1rem;
+                letter-spacing: 3px;
+            }
+            .logo-emblem {
+                width: 10px;
+                height: 10px;
+            }
+            .mobile-menu {
+                padding: 70px 20px 20px;
+                width: 85%;
+            }
+            .mobile-menu a {
+                font-size: 0.95rem;
+                padding: 10px 14px;
             }
             .rules-nav a {
                 font-size: 0.55rem;
@@ -474,11 +752,9 @@
 </head>
 <body>
 
-    <!-- 3D Background -->
     <canvas id="canvas3d"></canvas>
     <div class="vignette"></div>
 
-    <!-- Header -->
     <header>
         <a href="index.html" class="logo-container">
             <div class="logo-emblem"></div>
@@ -490,8 +766,26 @@
             <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
             <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
             <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="social-btn">Discord</a>
+            <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
+        </div>
+        <div class="menu-toggle" id="menuToggle" aria-label="Открыть меню">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
     </header>
+
+    <div class="mobile-overlay-bg" id="mobileOverlayBg"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html">🏠 Главная</a>
+        <a href="rules.html">📜 Правила</a>
+        <a href="rules_leader.html">👑 Правила лидера</a>
+        <a href="laws.html">⚖️ Законы</a>
+        <a href="https://vk.ru/respublika.online" target="_blank">📱 VK</a>
+        <a href="https://t.me/respublika_rp" target="_blank">✈️ Telegram</a>
+        <a href="https://discord.gg/7nUsZ6u9t" target="_blank">💬 Discord</a>
+        <button class="menu-theme-toggle" id="mobileThemeToggle">🌙 Светлая тема</button>
+    </div>
 
     <div class="content-layer">
         <section id="rules">
@@ -502,7 +796,6 @@
                     <strong>«РЕСПУБЛИКА RP»</strong> — свод правил для руководящего состава фракций.
                 </p>
 
-                <!-- Navigation -->
                 <div class="rules-nav">
                     <a href="#section1">1. Основные</a>
                     <a href="#section2">2. Обязанности</a>
@@ -514,21 +807,16 @@
                 </div>
 
                 <div class="rules-content">
-
-                    <!-- SECTION 1 -->
                     <h2 id="section1">РАЗДЕЛ 1. ОСНОВНЫЕ ПОЛОЖЕНИЯ</h2>
-                    
                     <p><strong>1.1.</strong> Данные правила могут быть изменены в любой момент по решению Администрации проекта.</p>
                     <p><strong>1.2.</strong> Незнание данных правил не освобождает лидера или заместителя фракции от ответственности за их нарушение.</p>
                     <p><strong>1.3.</strong> Администрация проекта имеет полное право наказывать лидеров организаций за нарушение данных правил на своё усмотрение, вплоть до снятия с должности, вне зависимости от количества выговоров или предупреждений.</p>
-                    
                     <p><strong>1.4.</strong> Лидер фракции назначается Администрацией по одному из следующих способов:</p>
                     <ul>
                         <li>По собеседованию через Discord после подачи заявки</li>
                         <li>После того, как лидер отстоял свой срок и полномочия были переданы заместителю, по усмотрению Администрации проекта</li>
                         <li>Иными способами, по усмотрению Администрации проекта (например, обзвон старших рангов структуры)</li>
                     </ul>
-                    
                     <p><strong>1.5.</strong> Минимальный срок для лидера или заместителя фракции составляет 30 дней, а максимальный — 90 дней. По истечении одного месяца возможно продление срока при условии продуктивной работы.</p>
                     <p><strong>1.6.</strong> Минимальный онлайн лидеров/заместителей указан в разделе 7.</p>
                     <p><strong>1.7.</strong> После ухода с поста лидера/заместителя по собственному желанию или по окончанию срока, игрок может подать заявку на пост лидера только спустя 15 дней. Старшая администрация вправе изменить этот срок на своё усмотрение.</p>
@@ -541,9 +829,7 @@
                     <p><strong>1.13.</strong> При снятии лидера/заместителя за нарушение правил лидера (Н.П.Л.), администрация самостоятельно выдвигает ограничения на его дальнейшее становление на лидерские/заместительские посты.</p>
                     <p><strong>1.14.</strong> Лидер или заместитель фракции обязан предоставить свод правил структурных подразделений организации (режим работы, устав специальных подразделений организации, рабочие часы организации, предложения по улучшению работы организации) в течение 3 дней после вступления в должность, если такие сведения не были ранее предоставлены.</p>
 
-                    <!-- SECTION 2 -->
                     <h2 id="section2">РАЗДЕЛ 2. ОБЯЗАННОСТИ ЛИДЕРОВ И ЗАМЕСТИТЕЛЕЙ</h2>
-                    
                     <h3>2.1. Обязанности лидера фракции</h3>
                     <ul>
                         <li><strong>2.1.1.</strong> Поддерживать уровень ролевой игры RP во фракции на максимально возможном уровне</li>
@@ -562,7 +848,6 @@
                         <li><strong>2.1.14.</strong> Поддерживать дружескую, рабочую и комфортную атмосферу в коллективе</li>
                         <li><strong>2.1.15.</strong> Нести полную ответственность за инвентарь, выданный для RP; при нецелевом использовании лидер получит наказание</li>
                     </ul>
-
                     <h3>2.2. Обязанности заместителя фракции</h3>
                     <ul>
                         <li><strong>2.2.1.</strong> Поддерживать высокий уровень RP и активности во фракции</li>
@@ -580,9 +865,7 @@
                         <li><strong>2.2.13.</strong> Нести полную ответственность за инвентарь, выданный для RP; при нецелевом использовании заместитель получит наказание</li>
                     </ul>
 
-                    <!-- SECTION 3 -->
                     <h2 id="section3">РАЗДЕЛ 3. ТРЕБОВАНИЯ К ЛИДЕРАМ И ЗАМЕСТИТЕЛЯМ</h2>
-                    
                     <p><strong>3.1.</strong> Лидерам быть онлайн не менее 4 часов в сутки, заместителям не менее 3 часов в сутки (См. раздел 7).</p>
                     <p><strong>3.2.</strong> Знать и соблюдать все правила сервера и фракции, подавая пример сотрудникам.</p>
                     <p><strong>3.3.</strong> Осуществлять контроль за поведением и дисциплиной всего состава фракции.</p>
@@ -594,9 +877,7 @@
                     <p><strong>3.8.</strong> Увольнять сотрудника по причине "Дембель" при получении военного билета (Для Армии).</p>
                     <p><strong>3.9.</strong> Иметь микрофон для решения проблем или задач, которые могут поставить перед ним Администрация проекта.</p>
 
-                    <!-- SECTION 4 -->
                     <h2 id="section4">РАЗДЕЛ 4. ЗАПРЕЩЕНО ЛИДЕРАМ И ЗАМЕСТИТЕЛЯМ</h2>
-                    
                     <p><strong>4.1.</strong> Обманывать Администрацию проекта.</p>
                     <p><strong>4.2.</strong> Нарушать правила сервера, Discord.</p>
                     <p><strong>4.3.</strong> Провоцировать конфликты/создавать токсичные ситуации на других серверах проекта или заходить на них с целью провокаций/создания конфликтных ситуаций.</p>
@@ -636,9 +917,7 @@
                     <p><strong>4.37.</strong> Использовать транспортное средство в рабочее время без разрешения Управляющего сервера. Исключение: Мероприятия; Сотрудники ОПГ.</p>
                     <p><strong>4.38.</strong> Рассматривать жалобы в личных сообщениях (должны рассматриваться официально).</p>
 
-                    <!-- SECTION 5 -->
                     <h2 id="section5">РАЗДЕЛ 5. ПРИЧИНЫ УВОЛЬНЕНИЯ И ОГРАНИЧЕНИЯ</h2>
-                    
                     <div class="table-wrap">
                         <table>
                             <thead>
@@ -650,29 +929,29 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>По собственному желанию (ПСЖ)</strong><br><span style="font-size:0.8rem;color:#94a3b8;">для ОПГ — «отошел от дел»</span></td>
+                                    <td><strong>По собственному желанию (ПСЖ)</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">для ОПГ — «отошел от дел»</span></td>
                                     <td>Без ограничений</td>
                                     <td>Добровольный уход с места работы.</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Профнепригодность</strong><br><span style="font-size:0.8rem;color:#94a3b8;">для ОПГ — «не оправдал доверие»</span></td>
+                                    <td><strong>Профнепригодность</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">для ОПГ — «не оправдал доверие»</span></td>
                                     <td>48 часов</td>
-                                    <td>Совокупность психофизических качеств, не позволяющих выполнять работу (систематическое нарушение правил, непонимание системы фракции).</td>
+                                    <td>Совокупность психофизических качеств, не позволяющих выполнять работу.</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Нарушение устава</strong><br><span style="font-size:0.8rem;color:#94a3b8;">для ОПГ — «нарушение понятий»</span></td>
+                                    <td><strong>Нарушение устава</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">для ОПГ — «нарушение понятий»</span></td>
                                     <td>72 часа</td>
                                     <td>Нарушение существующих актов, понятий, законов фракции в РП процессе.</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Отпуск</strong></td>
                                     <td>Согласно сроку отпуска (ранг сохраняется)</td>
-                                    <td>Временное освобождение от работы на определенный период для отдыха/иных целей с сохранением места работы.</td>
+                                    <td>Временное освобождение от работы на определенный период.</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Перевод</strong></td>
-                                    <td>Без ограничений (но с потерей ранга во фракции)</td>
-                                    <td>Постоянное или временное изменение трудовой функции, переход в новые структуры для дальнейшей работы.</td>
+                                    <td>Без ограничений (но с потерей ранга)</td>
+                                    <td>Постоянное или временное изменение трудовой функции.</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Резерв</strong></td>
@@ -680,19 +959,19 @@
                                     <td>Удержание специалиста на гражданской основе с последующим возвращением.</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Дембель</strong><br><span style="font-size:0.8rem;color:#94a3b8;">только для Армии</span></td>
+                                    <td><strong>Дембель</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">только для Армии</span></td>
                                     <td>Без ограничений</td>
-                                    <td>Процесс резервации после прохождения воинской службы на случай масштабных боевых действий.</td>
+                                    <td>Процесс резервации после прохождения воинской службы.</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Неактив</strong></td>
                                     <td>72 часа</td>
-                                    <td>Долгое отсутствие сотрудника без предупреждения (увольнение после 4-х дней неактива без предупреждения лидера/зама).</td>
+                                    <td>Долгое отсутствие сотрудника без предупреждения.</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Чёрный список (ЧС)</strong></td>
                                     <td>Навсегда (только в ту конкретную фракцию)</td>
-                                    <td>Список лиц, чья деятельность нанесла ущерб организации. Запрет на вступление действует навсегда.</td>
+                                    <td>Список лиц, чья деятельность нанесла ущерб организации.</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Срок</strong></td>
@@ -700,23 +979,20 @@
                                     <td>Завершение срока лидера/заместителя приравнивается к ПСЖ.</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>НПЛ</strong><br><span style="font-size:0.8rem;color:#94a3b8;">Нарушение правил лидера</span></td>
+                                    <td><strong>НПЛ</strong><br><span style="font-size:0.8rem;color:var(--text-muted);">Нарушение правил лидера</span></td>
                                     <td>72 часа</td>
-                                    <td>Приравнивается к нарушению устава; применяется за систематические или грубые нарушения настоящих правил.</td>
+                                    <td>Приравнивается к нарушению устава.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- SECTION 6 -->
                     <h2 id="section6">РАЗДЕЛ 6. ПРОЧЕЕ</h2>
-                    
                     <p><strong>6.1.</strong> Максимальное количество предупреждений для личного состава составляет: 2 Строгих выговора.</p>
                     <p><strong>6.2.</strong> Лидеры и их заместители полностью отвечают за свой состав. За частые нарушения со стороны своего состава лидер будет наказан.</p>
                     <p><strong>6.3.</strong> При вступлении в Армию на контрактную службу, с имеющимся военным билетом, игрок получает сразу 3 ранг.</p>
                     <p><strong>6.4.</strong> Срок временно исполняющего обязанности (ВРИО) лидера — 14 дней.</p>
                     <p><strong>6.5.</strong> При получении максимального числа выговоров (3/3 у лидера и 2/2 заместителя лидера) будет увольнение. Устное предупреждение подразумевает дальнейший выговор.</p>
-                    
                     <p><strong>6.6.</strong> Переводы доступны для всех фракций, но с потерей ранга:</p>
                     <ul>
                         <li>▸ с МВД на Армию: -1 ранг</li>
@@ -726,13 +1002,12 @@
                         <li>▸ с ГИБДД на Армию: -1 ранг</li>
                         <li>▸ с Армии на ГИБДД: -1 ранг</li>
                     </ul>
-                    
-                    <p><strong>6.7.</strong> Лидеры фракции имеют право осуществлять "поблажки" при принятии отчётов (данное правило действует на тот случай, если сотруднику фракции не хватает несущественного критерия к повышению или на скриншотах большие или маленькие промежутки).</p>
-                    <p><strong>6.8.</strong> Лидеры фракции имеют право не повышать сотрудника, если он получил строгий выговор. Сотрудник готовит новый отчёт на следующий раз.</p>
+                    <p><strong>6.7.</strong> Лидеры фракции имеют право осуществлять "поблажки" при принятии отчётов.</p>
+                    <p><strong>6.8.</strong> Лидеры фракции имеют право не повыщать сотрудника, если он получил строгий выговор.</p>
                     <p><strong>6.9.</strong> Лидер или заместитель могут отказать в принятии во фракцию в случае неадекватного поведения, агрессии и провокаций.</p>
                     <p><strong>6.10.</strong> Лидер или заместитель не должны принимать отчёт, оформленный не по форме.</p>
                     <p><strong>6.11.</strong> В случае получения выговора сотрудником, в течение 7 дней с момента получения и до фактической отработки этих дней лидер или заместитель вправе отказать сотруднику в переводе.</p>
-                    <p><strong>6.12.</strong> Если у игрока в трудовой причине увольнения "перевод", ему даётся 10 дней на то, чтобы вступить во фракцию. Если игрок не вступает во фракцию за 10 дней, перевод будет считаться недействительным.</p>
+                    <p><strong>6.12.</strong> Если у игрока в трудовой причине увольнения "перевод", ему даётся 10 дней на то, чтобы вступить во фракцию.</p>
                     <p><strong>6.13.</strong> Лидер имеет право не делать отчёты в выходные дни (суббота, воскресенье). Однако заместитель должен подменить лидера на это время.</p>
                     <p><strong>6.14.</strong> Лидер или заместитель имеет право выдавать сотрудникам фракции отпуск до 14 дней один раз в месяц.</p>
                     <p><strong>6.15.</strong> Лидер или заместитель имеет право выдавать ЧС с разрешения администрации в случае, если человек имеет более 5 нарушений устава или понятий данной фракции.</p>
@@ -745,11 +1020,8 @@
                     <p><strong>6.18.</strong> Лидер и заместитель государственной организации обязаны перед приёмом во фракцию проверить наличие медкнижки у человека, который пришёл на набор (отыгровка по RP и наличие в инвентаре).</p>
                     <p><strong>6.19.</strong> Максимальный срок отгулов у сотрудников не должен превышать 2 часа в день. Максимальное количество отгулов — 3 в неделю.</p>
 
-                    <!-- SECTION 7 -->
                     <h2 id="section7">РАЗДЕЛ 7. МИНИМАЛЬНЫЙ ОНЛАЙН ЛИДЕРОВ/ЗАМЕСТИТЕЛЕЙ</h2>
-                    
-                    <p><strong>7.1.</strong> Для Лидеров минимальный онлайн составляет <strong style="color:#fff;">4 часа в сутки</strong>; для Заместителей — <strong style="color:#fff;">3 часа в сутки</strong>. Данное требование обязательно для всех фракций: ЦГБ, МВД, ГИБДД, ОПГ, Армия.</p>
-
+                    <p><strong>7.1.</strong> Для Лидеров минимальный онлайн составляет <strong style="color:var(--text-main);">4 часа в сутки</strong>; для Заместителей — <strong style="color:var(--text-main);">3 часа в сутки</strong>. Данное требование обязательно для всех фракций: ЦГБ, МВД, ГИБДД, ОПГ, Армия.</p>
                 </div>
 
                 <div style="text-align: center; margin-top: 50px;">
@@ -765,7 +1037,6 @@
         &copy; 2026 РЕСПУБЛИКА ROLE PLAY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
     </footer>
 
-    <!-- 3D Script -->
     <script>
         const canvas = document.getElementById('canvas3d');
         const scene = new THREE.Scene();
@@ -920,6 +1191,51 @@
         if (window.innerWidth < 600) {
             camera.position.z = 24;
         }
+
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlayBg = document.getElementById('mobileOverlayBg');
+
+        function toggleMenu() {
+            menuToggle.classList.toggle('active');
+            mobileMenu.classList.toggle('open');
+            overlayBg.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : 'auto';
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        overlayBg.addEventListener('click', toggleMenu);
+
+        document.querySelectorAll('.mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (mobileMenu.classList.contains('open')) toggleMenu();
+            });
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+        const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const icon = theme === 'light' ? '🌙' : '☀️';
+            themeToggle.textContent = icon;
+            mobileThemeToggle.textContent = theme === 'light' ? '🌙 Светлая тема' : '☀️ Тёмная тема';
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            setTheme(current === 'light' ? 'dark' : 'light');
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', () => {
+            toggleTheme();
+            if (mobileMenu.classList.contains('open')) toggleMenu();
+        });
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
     </script>
 </body>
 </html>
