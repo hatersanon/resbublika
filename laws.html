@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Законы — РЕСПУБЛИКА RP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        :root {
+            --gold-primary: #d97724;
+            --gold-light: #ffc885;
+            --gold-dark: #8c430e;
+            --gold-gradient: linear-gradient(135deg, #c8681e 0%, #ffd49b 25%, #a64f11 50%, #f7b267 75%, #8c430e 100%);
+            --gold-glow: rgba(217, 119, 36, 0.4);
+            --bg-dark: #050608;
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body {
+            position: relative;
+            width: 100%;
+            overflow-x: hidden;
+            background: var(--bg-dark);
+            line-height: 1.6;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 50% 30%, rgba(217, 119, 36, 0.08) 0%, transparent 70%),
+                radial-gradient(circle at 50% 80%, rgba(5, 6, 8, 0.85) 0%, rgba(5, 6, 8, 0.95) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 6%;
+            background: rgba(5, 6, 8, 0.45);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-emblem {
+            width: 14px;
+            height: 14px;
+            background: var(--gold-gradient);
+            transform: rotate(45deg);
+            box-shadow: 0 0 15px var(--gold-primary);
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 900;
+            letter-spacing: 5px;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(217, 119, 36, 0.3);
+            white-space: nowrap;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .social-btn {
+            position: relative;
+            color: #fff;
+            text-decoration: none;
+            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-btn:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.35);
+            background: rgba(217, 119, 36, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 120px 0 60px 0;
+            position: relative;
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(15, 18, 26, 0.35) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            border-radius: 28px;
+            padding: clamp(25px, 5vw, 60px);
+            width: 100%;
+            max-width: 1100px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(217, 119, 36, 0.08);
+            text-align: left;
+            transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(217, 119, 36, 0.45);
+            box-shadow: 
+                0 35px 70px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                0 0 30px rgba(217, 119, 36, 0.2);
+        }
+
+        .glass-card:hover::after {
+            left: 100%;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            background: rgba(217, 119, 36, 0.15);
+            border: 1px solid rgba(217, 119, 36, 0.45);
+            color: var(--gold-light);
+            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(217, 119, 36, 0.2);
+        }
+
+        .title-primary {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.2rem, 7vw, 4.2rem);
+            font-weight: 900;
+            letter-spacing: clamp(4px, 1.5vw, 12px);
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #ffffff 40%, rgba(255, 255, 255, 0.55) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.9));
+            text-align: center;
+        }
+
+        .title-gold {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .description {
+            font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+            line-height: 1.85;
+            color: var(--text-muted);
+            font-weight: 300;
+            margin: 0 auto 40px auto;
+            max-width: 750px;
+            text-align: center;
+        }
+
+        .btn-cta {
+            position: relative;
+            padding: clamp(12px, 2vw, 18px) clamp(25px, 4vw, 45px);
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #050608;
+            background: var(--gold-gradient);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 35px rgba(217, 119, 36, 0.45);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none;
+            max-width: 280px;
+            width: 100%;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(217, 119, 36, 0.7);
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .tab-btn {
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 10px 20px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--gold-primary);
+            color: #fff;
+            background: rgba(217, 119, 36, 0.15);
+            box-shadow: 0 0 20px rgba(217, 119, 36, 0.2);
+        }
+
+        .tab-btn.active {
+            border-color: var(--gold-primary);
+            color: #fff;
+            background: rgba(217, 119, 36, 0.2);
+            box-shadow: 0 0 25px rgba(217, 119, 36, 0.3);
+        }
+
+        /* Table Styles */
+        .law-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+        }
+
+        .law-table thead th {
+            background: rgba(217, 119, 36, 0.15);
+            border-bottom: 2px solid var(--gold-primary);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: clamp(0.7rem, 1vw, 0.8rem);
+        }
+
+        .law-table tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            vertical-align: top;
+        }
+
+        .law-table tbody tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .law-table .col-article {
+            font-weight: 600;
+            color: var(--gold-light);
+            white-space: nowrap;
+            width: 12%;
+        }
+
+        .law-table .col-desc {
+            width: 55%;
+        }
+
+        .law-table .col-fine {
+            width: 15%;
+            text-align: center;
+        }
+
+        .law-table .col-time {
+            width: 15%;
+            text-align: center;
+        }
+
+        .law-table .empty-cell {
+            color: var(--text-muted);
+            opacity: 0.4;
+            font-style: italic;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(217, 119, 36, 0.2);
+            padding-bottom: 10px;
+        }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(5, 6, 8, 0.9);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 15px 4%;
+            }
+            .social-links {
+                gap: 6px;
+            }
+            .social-btn {
+                padding: 8px 12px;
+                letter-spacing: 1px;
+                font-size: 0.65rem;
+            }
+            section {
+                padding: 90px 0 40px 0;
+            }
+            .tab-btn {
+                font-size: 0.6rem;
+                padding: 6px 14px;
+            }
+            .law-table thead th,
+            .law-table tbody td {
+                padding: 6px 8px;
+                font-size: 0.7rem;
+            }
+            .law-table .col-article {
+                width: 18%;
+            }
+            .law-table .col-desc {
+                width: 45%;
+            }
+            .law-table .col-fine,
+            .law-table .col-time {
+                width: 16%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Background -->
+    <canvas id="canvas3d"></canvas>
+    <div class="vignette"></div>
+
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="logo-container">
+            <div class="logo-emblem"></div>
+            <div class="logo-text">РЕСПУБЛИКА</div>
+        </a>
+        <div class="social-links">
+            <a href="index.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ГЛАВНАЯ</a>
+            <a href="rules.html" class="social-btn" style="border-color: rgba(217, 119, 36, 0.4);">ПРАВИЛА</a>
+            <a href="https://vk.ru/respublika.online" target="_blank" rel="noopener" class="social-btn">VK</a>
+            <a href="https://t.me/respublika_rp" target="_blank" rel="noopener" class="social-btn">Telegram</a>
+            <a href="https://discord.gg/7nUsZ6u9t" target="_blank" rel="noopener" class="social-btn">Discord</a>
+        </div>
+    </header>
+
+    <div class="content-layer">
+        <section id="laws">
+            <div class="glass-card">
+                <div class="badge">⚖️ КОДЕКС ЗАКОНОВ</div>
+                <h1 class="title-primary">ЗАКОНЫ <span class="title-gold">РЕСПУБЛИКИ</span></h1>
+                <p class="description" style="text-align: center; margin-bottom: 30px;">
+                    <strong>Кодекс об административных правонарушениях (КоАП)</strong> — выбирайте раздел для просмотра.
+                </p>
+
+                <!-- Tab Navigation -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-tab="tab1">Общественный порядок</button>
+                    <button class="tab-btn" data-tab="tab2">Имущество / Режим</button>
+                    <button class="tab-btn" data-tab="tab3">Документы / Секретность</button>
+                    <button class="tab-btn" data-tab="tab4">Дорожные нарушения (ПДД)</button>
+                </div>
+
+                <!-- TAB 1: Общественный порядок -->
+                <div class="tab-content active" id="tab1">
+                    <h2 class="section-title">1.Х — ОБЩЕСТВЕННЫЙ ПОРЯДОК / КОММУНИКАЦИИ</h2>
+                    <table class="law-table">
+                        <thead>
+                            <tr>
+                                <th class="col-article">Статья</th>
+                                <th class="col-desc">Описание</th>
+                                <th class="col-fine">Штраф (₽)</th>
+                                <th class="col-time">Время (мин)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-article">КоАП 1.1</td>
+                                <td class="col-desc">Использование нецензурных слов в общественном месте</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.2</td>
+                                <td class="col-desc">Оскорбление личности</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.3</td>
+                                <td class="col-desc">Оскорбление должностного лица</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.4</td>
+                                <td class="col-desc">Мелкое хулиганство</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.5</td>
+                                <td class="col-desc">Потребление наркотических средств</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.6</td>
+                                <td class="col-desc">Клевета</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.7</td>
+                                <td class="col-desc">Нарушение порядка проведения собрания/митинга</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.8</td>
+                                <td class="col-desc">Неповиновение законному требованию полиции</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.9</td>
+                                <td class="col-desc">Выдача себя за другое лицо; присвоение статуса должностного лица (в т.ч. имитация гос. структур)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.10</td>
+                                <td class="col-desc">Ложный вызов экстренных служб</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.11</td>
+                                <td class="col-desc">Публичные призывы к противоправным действиям/насилию/массовым нарушениям порядка</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.12</td>
+                                <td class="col-desc">Распространение заведомо ложной информации, вызывающей панику (если не подпадает под УК)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.13</td>
+                                <td class="col-desc">Предпринимательская деятельность без регистрации/лицензии</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 1.14</td>
+                                <td class="col-desc">Нарушение правил торговли/оказания платных услуг (вне отведённых мест, без чеков/разрешений)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 2: Имущество / Режим -->
+                <div class="tab-content" id="tab2">
+                    <h2 class="section-title">3.Х — ИМУЩЕСТВО / РЕЖИМ</h2>
+                    <table class="law-table">
+                        <thead>
+                            <tr>
+                                <th class="col-article">Статья</th>
+                                <th class="col-desc">Описание</th>
+                                <th class="col-fine">Штраф (₽)</th>
+                                <th class="col-time">Время (мин)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-article">КоАП 3.1</td>
+                                <td class="col-desc">Порча имущества (вандализм, граффити)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 3.2</td>
+                                <td class="col-desc">Попытка угона транспорта</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 3.3</td>
+                                <td class="col-desc">Проникновение на охраняемый объект</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 3.4</td>
+                                <td class="col-desc">Проникновение на государственный охраняемый объект</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 3.5</td>
+                                <td class="col-desc">Блокирование эвакуационных выходов/препятствие эвакуации</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 3: Документы / Секретность -->
+                <div class="tab-content" id="tab3">
+                    <h2 class="section-title">4.Х — ДОКУМЕНТЫ / СЕКРЕТНОСТЬ</h2>
+                    <table class="law-table">
+                        <thead>
+                            <tr>
+                                <th class="col-article">Статья</th>
+                                <th class="col-desc">Описание</th>
+                                <th class="col-fine">Штраф (₽)</th>
+                                <th class="col-time">Время (мин)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-article">КоАП 4.1</td>
+                                <td class="col-desc">Бездействие должностного лица</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 4.2</td>
+                                <td class="col-desc">Подделка документов и их использование</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 4.3</td>
+                                <td class="col-desc">Заведомо ложные сведения сотруднику при разбирательстве</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 4.4</td>
+                                <td class="col-desc">Разглашение служебной или коммерческой тайны (если нет признаков УК)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 4.5</td>
+                                <td class="col-desc">Утрата служебных документов/носителей (без гостайны)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 4.6</td>
+                                <td class="col-desc">Нарушение порядка работы с конфиденциальными данными (несанкц. доступ/фото/видео на режиме)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 4: Дорожные нарушения (ПДД) -->
+                <div class="tab-content" id="tab4">
+                    <h2 class="section-title">2.Х — ДОРОЖНЫЕ НАРУШЕНИЯ (ПДД)</h2>
+                    <table class="law-table">
+                        <thead>
+                            <tr>
+                                <th class="col-article">Статья</th>
+                                <th class="col-desc">Описание</th>
+                                <th class="col-fine">Штраф (₽)</th>
+                                <th class="col-time">Время (мин)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-article">КоАП 2.1</td>
+                                <td class="col-desc">Езда без указателей поворота</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.2</td>
+                                <td class="col-desc">Тонировка не по ГОСТу (низкая светопропускная способность передних стекол)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.3</td>
+                                <td class="col-desc">Нарушение требований транспортной безопасности</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.4</td>
+                                <td class="col-desc">Парковка в неположенном месте (тротуар, газон, проезжая часть)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.5</td>
+                                <td class="col-desc">Проезд на запрещающий сигнал светофора</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.6</td>
+                                <td class="col-desc">Движение по пешеходным зонам/газонам/иным местам, не предназначенным для ТС</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.7</td>
+                                <td class="col-desc">ДТП без пострадавших по вине водителя</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.8</td>
+                                <td class="col-desc">Оставление места ДТП</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.9</td>
+                                <td class="col-desc">Не уступил автомобилю со спецсигналом (маячок/сирена)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.10</td>
+                                <td class="col-desc">Нарушение правил остановки/стоянки с созданием помех</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.11</td>
+                                <td class="col-desc">Невыполнение требования об остановке ТС</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.12</td>
+                                <td class="col-desc">Самовольное ограничение/прекращение движения</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.13</td>
+                                <td class="col-desc">Создание помех спецтранспорту</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.14</td>
+                                <td class="col-desc">Выезд на встречную полосу</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.15</td>
+                                <td class="col-desc">Превышение скорости на 20-40 км/ч</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.16</td>
+                                <td class="col-desc">Превышение скорости на 40-60 км/ч</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.17</td>
+                                <td class="col-desc">Превышение скорости более 60 км/ч</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.18</td>
+                                <td class="col-desc">Непристёгнутый ремень безопасности</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.19</td>
+                                <td class="col-desc">Отсутствие полиса обязательного страхования (ОСАГО)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.20</td>
+                                <td class="col-desc">Движение/остановка на полосе общественного транспорта</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.21</td>
+                                <td class="col-desc">Парковка на месте для инвалидов</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.22</td>
+                                <td class="col-desc">Опасное вождение (резкие манёвры, дрифт и т. п.)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.23</td>
+                                <td class="col-desc">Вождение в состоянии опьянения</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.24</td>
+                                <td class="col-desc">Отказ от медосвидетельствования</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.25</td>
+                                <td class="col-desc">Нарушение ограничений для грузового транспорта (знаки/вес/габарит/время/маршрут/пропуск)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.26</td>
+                                <td class="col-desc">Непредоставление преимущества пешеходу на переходе</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.27</td>
+                                <td class="col-desc">Неостановка перед линией/знаком «СТОП»</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.28</td>
+                                <td class="col-desc">Проезд через ж/д переезд при закрывающемся/закрытом шлагбауме</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.29</td>
+                                <td class="col-desc">Эксплуатация ТС с неисправностями (тормоза/свет/резина)</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                            <tr>
+                                <td class="col-article">КоАП 2.30</td>
+                                <td class="col-desc">Обгон с выездом на трамвайные пути встречного направления</td>
+                                <td class="col-fine">—</td>
+                                <td class="col-time">—</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="text-align: center; margin-top: 50px;">
+                    <a href="index.html" class="btn-cta" style="max-width: 300px; text-decoration: none; margin: 0 auto;">
+                        <span>ВЕРНУТЬСЯ НА ГЛАВНУЮ</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        &copy; 2026 РЕСПУБЛИКА ROLE PLAY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+    </footer>
+
+    <!-- 3D Script -->
+    <script>
+        const canvas = document.getElementById('canvas3d');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 18;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        const outerGeo = new THREE.IcosahedronGeometry(7, 3);
+        const wireframeGeo = new THREE.WireframeGeometry(outerGeo);
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xd97724,
+            transparent: true,
+            opacity: 0.4,
+        });
+        const goldenWebSphere = new THREE.LineSegments(wireframeGeo, lineMaterial);
+        mainGroup.add(goldenWebSphere);
+
+        const vertices = outerGeo.attributes.position.array;
+        const dotsGeo = new THREE.BufferGeometry();
+        dotsGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        const dotsMaterial = new THREE.PointsMaterial({
+            color: 0xffc885,
+            size: 0.18,
+            transparent: true,
+            opacity: 0.7
+        });
+        const dotsMesh = new THREE.Points(dotsGeo, dotsMaterial);
+        mainGroup.add(dotsMesh);
+
+        const innerGeo = new THREE.IcosahedronGeometry(4.2, 2);
+        const innerMat = new THREE.MeshBasicMaterial({
+            color: 0x8c430e,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.2
+        });
+        const innerSphere = new THREE.Mesh(innerGeo, innerMat);
+        mainGroup.add(innerSphere);
+
+        function createRing(radius, tube, color) {
+            const ringGeo = new THREE.TorusGeometry(radius, tube, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: color, wireframe: true, transparent: true, opacity: 0.3 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            return ring;
+        }
+
+        const ring1 = createRing(9.5, 0.04, 0xd97724);
+        ring1.rotation.x = Math.PI / 3;
+        mainGroup.add(ring1);
+
+        const ring2 = createRing(11, 0.02, 0xffc885);
+        ring2.rotation.y = Math.PI / 4;
+        mainGroup.add(ring2);
+
+        const particleCount = window.innerWidth < 600 ? 100 : 200;
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCoords = new Float32Array(particleCount * 3);
+        for(let i = 0; i < particleCount * 3; i++) {
+            particleCoords[i] = (Math.random() - 0.5) * 45;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particleCoords, 3));
+        const particleMat = new THREE.PointsMaterial({
+            color: 0xd97724,
+            size: 0.08,
+            transparent: true,
+            opacity: 0.4
+        });
+        const particleSystem = new THREE.Points(particleGeo, particleMat);
+        scene.add(particleSystem);
+
+        let targetX = 0;
+        let targetY = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function onPointerMove(e) {
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            if (x && y) {
+                mouseX = (x - window.innerWidth / 2) * 0.0006;
+                mouseY = (y - window.innerHeight / 2) * 0.0006;
+            }
+        }
+
+        window.addEventListener('mousemove', onPointerMove);
+        window.addEventListener('touchmove', onPointerMove);
+
+        let scrollY = 0;
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            goldenWebSphere.rotation.y = elapsedTime * 0.1;
+            goldenWebSphere.rotation.x = elapsedTime * 0.05;
+
+            dotsMesh.rotation.y = elapsedTime * 0.1;
+            dotsMesh.rotation.x = elapsedTime * 0.05;
+
+            innerSphere.rotation.y = -elapsedTime * 0.15;
+            ring1.rotation.z = elapsedTime * 0.08;
+            ring2.rotation.x = elapsedTime * 0.1;
+
+            const scrollFactor = scrollY * 0.0015;
+
+            mainGroup.rotation.y = scrollFactor * 1.2;
+            mainGroup.rotation.x = scrollFactor * 0.6;
+            
+            const targetScale = 1 + Math.sin(scrollFactor) * 0.15;
+            mainGroup.scale.set(targetScale, targetScale, targetScale);
+
+            mainGroup.position.y = -scrollFactor * 2;
+
+            targetX += (mouseX - targetX) * 0.05;
+            targetY += (mouseY - targetY) * 0.05;
+
+            mainGroup.rotation.y += targetX;
+            mainGroup.rotation.x += targetY;
+
+            particleSystem.rotation.y = elapsedTime * 0.02;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            if (window.innerWidth < 600) {
+                camera.position.z = 24;
+            } else {
+                camera.position.z = 18;
+            }
+        });
+
+        if (window.innerWidth < 600) {
+            camera.position.z = 24;
+        }
+
+        // ========================
+        // TAB SWITCHING
+        // ========================
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                // Add active to clicked tab
+                tab.classList.add('active');
+
+                // Hide all contents
+                contents.forEach(c => c.classList.remove('active'));
+
+                // Show target content
+                const targetId = tab.dataset.tab;
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
