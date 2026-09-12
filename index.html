@@ -814,7 +814,6 @@
             transform: translateX(6px);
         }
 
-        /* Отключённые кнопки — не реагируют на клики, ничего не всплывает */
         .platform-btn.disabled {
             cursor: not-allowed;
             opacity: 0.55;
@@ -918,8 +917,17 @@
             .mobile-controls {
                 display: flex;
             }
+            /* Отступы между блоками на мобилке уменьшены в 2 раза */
             section {
-                padding: 90px 0 40px 0;
+                padding: 45px 0 20px 0;
+            }
+            .screenshots-section {
+                padding: 20px 0 10px 0;
+            }
+            footer {
+                padding: 20px 15px;
+                margin-top: 20px;
+                font-size: 0.7rem;
             }
             .slider-arrow {
                 width: 38px;
@@ -960,6 +968,13 @@
                 width: 36px;
                 height: 36px;
                 font-size: 1rem;
+            }
+            /* Ещё чуть уменьшаем отступы на маленьких телефонах */
+            section {
+                padding: 40px 0 15px 0;
+            }
+            .screenshots-section {
+                padding: 15px 0 8px 0;
             }
             .slider-dots {
                 gap: 7px;
