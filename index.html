@@ -305,7 +305,6 @@
             pointer-events: all;
         }
 
-        /* Mobile header controls */
         .mobile-controls {
             display: none;
             align-items: center;
@@ -559,6 +558,172 @@
             60% { transform: translate(-50%, -5px); }
         }
 
+        /* ===== ГАЛЕРЕЯ СКРИНШОТОВ ===== */
+        .screenshots-section {
+            padding: 40px 0 20px 0;
+        }
+
+        /* Карточка галереи — компактнее по паддингам и ширине,
+           но слайдер внутри остаётся большим */
+        .screenshots-card {
+            max-width: 900px !important;
+            padding: clamp(20px, 3vw, 36px) !important;
+        }
+
+        /* Компактнее бейдж именно в галерее */
+        .screenshots-card .badge {
+            margin-bottom: 16px;
+            padding: 6px 16px;
+            font-size: clamp(0.6rem, 1.3vw, 0.72rem);
+            letter-spacing: 2.5px;
+        }
+
+        .screenshots-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 4vw, 2.6rem);
+            font-weight: 900;
+            letter-spacing: clamp(3px, 1.2vw, 8px);
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: var(--title-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: var(--title-shadow);
+        }
+
+        .slider-wrap {
+            position: relative;
+            width: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--glass-border);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                0 0 30px rgba(217, 119, 36, 0.12);
+            aspect-ratio: 16 / 9;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+        }
+
+        .slider-track {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            transition: transform 0.7s cubic-bezier(0.65, 0.05, 0.36, 1);
+            will-change: transform;
+        }
+
+        .slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        .slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 55%, rgba(5, 6, 8, 0.65) 100%);
+            pointer-events: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 5;
+            padding: 6px 13px;
+            border-radius: 30px;
+            background: rgba(5, 6, 8, 0.55);
+            border: 1px solid var(--badge-border);
+            color: var(--badge-color);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(5, 6, 8, 0.55);
+            border: 1px solid var(--glass-border);
+            color: var(--gold-light);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .slider-arrow:hover {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 25px rgba(217, 119, 36, 0.5);
+            background: rgba(217, 119, 36, 0.25);
+        }
+
+        .slider-arrow.prev { left: 14px; }
+        .slider-arrow.next { right: 14px; }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            display: flex;
+            gap: 9px;
+            padding: 7px 14px;
+            border-radius: 30px;
+            background: rgba(5, 6, 8, 0.5);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .slider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        .slider-dot.active {
+            background: var(--gold-gradient);
+            box-shadow: 0 0 12px rgba(217, 119, 36, 0.8);
+            width: 22px;
+            border-radius: 10px;
+        }
+
+        /* ===== МОДАЛКА ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -652,6 +817,51 @@
             transform: translateX(6px);
         }
 
+        .platform-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            background: rgba(255, 255, 255, 0.03);
+            border-style: dashed;
+            border-color: rgba(255, 255, 255, 0.15);
+            pointer-events: auto;
+        }
+
+        [data-theme="light"] .platform-btn.disabled {
+            background: rgba(120, 115, 105, 0.06);
+            border-color: rgba(120, 115, 105, 0.2);
+        }
+
+        .platform-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        [data-theme="light"] .platform-btn.disabled:hover {
+            background: rgba(120, 115, 105, 0.06);
+            border-color: rgba(120, 115, 105, 0.2);
+        }
+
+        .platform-btn.disabled .platform-tag {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--gold-light);
+            background: rgba(217, 119, 36, 0.15);
+            border: 1px solid rgba(217, 119, 36, 0.35);
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        [data-theme="light"] .platform-btn.disabled .platform-tag {
+            color: var(--gold-dark);
+            background: rgba(180, 160, 120, 0.2);
+            border-color: rgba(160, 130, 80, 0.4);
+        }
+
         .close-btn {
             position: absolute;
             top: 18px;
@@ -667,6 +877,50 @@
 
         .close-btn:hover {
             color: var(--text-main);
+        }
+
+        /* ===== ТОСТ ===== */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            z-index: 2000;
+            padding: 16px 30px;
+            border-radius: 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--badge-border);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
+                        0 0 30px rgba(217, 119, 36, 0.25),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 10px;
+            height: 10px;
+            background: var(--gold-gradient);
+            transform: rotate(45deg);
+            box-shadow: 0 0 12px var(--gold-primary);
+            flex-shrink: 0;
         }
 
         footer {
@@ -707,6 +961,13 @@
             section {
                 padding: 90px 0 40px 0;
             }
+            .slider-arrow {
+                width: 38px;
+                height: 38px;
+                font-size: 0.9rem;
+            }
+            .slider-arrow.prev { left: 10px; }
+            .slider-arrow.next { right: 10px; }
         }
 
         @media (min-width: 769px) {
@@ -739,6 +1000,24 @@
                 width: 36px;
                 height: 36px;
                 font-size: 1rem;
+            }
+            .slider-dots {
+                gap: 7px;
+                padding: 6px 12px;
+                bottom: 12px;
+            }
+            .slider-dot {
+                width: 7px;
+                height: 7px;
+            }
+            .slider-dot.active {
+                width: 20px;
+            }
+            .slide-counter {
+                top: 10px;
+                right: 10px;
+                font-size: 0.65rem;
+                padding: 5px 10px;
             }
         }
     </style>
@@ -805,13 +1084,27 @@
             </div>
         </section>
 
-        <section id="world">
-            <div class="glass-card">
-                <div class="badge">01 // АВТОНОМНЫЙ МИР</div>
-                <h2 class="title-primary" style="font-size: clamp(1.8rem, 5vw, 3.5rem);">БЕСШОВНЫЙ <span class="title-gold">ОТКРЫТЫЙ МИР</span></h2>
-                <p class="description" style="margin-bottom: 0;">
-                    Погрузись в виртуальное государство с развитой инфраструктурой, сотнями уникальных локаций и реальными игроками со всей планеты. Наша 3D-сеть объединяет игроков со всех платформ в одном едином пространстве.
-                </p>
+        <section id="world" class="screenshots-section">
+            <div class="glass-card screenshots-card">
+                <div class="badge">01 // КАДРЫ РАЗРАБОТКИ</div>
+                <h2 class="screenshots-title">АТМОСФЕРА <span class="title-gold">ПРОЕКТА</span></h2>
+
+                <div class="slider-wrap" id="sliderWrap">
+                    <div class="slider-track" id="sliderTrack">
+                        <div class="slide"><img src="images/1.png" alt="Кадр разработки 1" loading="lazy"></div>
+                        <div class="slide"><img src="images/2.png" alt="Кадр разработки 2" loading="lazy"></div>
+                        <div class="slide"><img src="images/3.png" alt="Кадр разработки 3" loading="lazy"></div>
+                        <div class="slide"><img src="images/4.png" alt="Кадр разработки 4" loading="lazy"></div>
+                        <div class="slide"><img src="images/5.png" alt="Кадр разработки 5" loading="lazy"></div>
+                    </div>
+
+                    <div class="slide-counter" id="slideCounter">1 / 5</div>
+
+                    <button class="slider-arrow prev" id="sliderPrev" aria-label="Предыдущий кадр">&#10094;</button>
+                    <button class="slider-arrow next" id="sliderNext" aria-label="Следующий кадр">&#10095;</button>
+
+                    <div class="slider-dots" id="sliderDots"></div>
+                </div>
             </div>
         </section>
 
@@ -849,14 +1142,14 @@
             <p class="modal-subtitle">Выберите версию для вашего устройства</p>
             
             <div class="platform-list">
-                <a href="https://disk.yandex.ru/d/gpkqtJH1aqP3Iw" target="_blank" rel="noopener" class="platform-btn">
+                <div class="platform-btn disabled" onclick="showToast('ANDROID ПОКА НЕ ДОСТУПЕН')">
                     <span>ANDROID (APK)</span>
-                    <span>&rarr;</span>
-                </a>
-                <a href="https://disk.yandex.ru/d/gpkqtJH1aqP3Iw" target="_blank" rel="noopener" class="platform-btn">
+                    <span class="platform-tag">Пока не доступно</span>
+                </div>
+                <div class="platform-btn disabled" onclick="showToast('IOS ПОКА НЕ ДОСТУПЕН')">
                     <span>IOS (APP STORE)</span>
-                    <span>&rarr;</span>
-                </a>
+                    <span class="platform-tag">Пока не доступно</span>
+                </div>
                 <a href="https://disk.yandex.ru/d/gpkqtJH1aqP3Iw" target="_blank" rel="noopener" class="platform-btn">
                     <span>PC CLIENT (WINDOWS)</span>
                     <span>&rarr;</span>
@@ -865,7 +1158,13 @@
         </div>
     </div>
 
+    <div class="toast" id="toast">
+        <span class="toast-icon"></span>
+        <span id="toastText">ПОКА НЕ ДОСТУПНО</span>
+    </div>
+
     <script>
+        /* ===== THREE.JS ФОН ===== */
         const canvas = document.getElementById('canvas3d');
         const scene = new THREE.Scene();
         
@@ -1031,6 +1330,7 @@
             camera.position.z = 24;
         }
 
+        /* ===== МОДАЛКА ===== */
         function openModal() {
             document.getElementById('downloadModal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1047,6 +1347,20 @@
             }
         }
 
+        /* ===== ТОСТ ===== */
+        let toastTimer = null;
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toastText');
+            toastText.textContent = text || 'ПОКА НЕ ДОСТУПНО';
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
         const overlayBg = document.getElementById('mobileOverlayBg');
@@ -1067,6 +1381,7 @@
             });
         });
 
+        /* ===== ТЕМА ===== */
         const themeToggle = document.getElementById('themeToggle');
         const mobileThemeToggle = document.getElementById('mobileThemeToggle');
 
@@ -1088,6 +1403,109 @@
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
         setTheme(savedTheme);
+
+        /* ===== СЛАЙДЕР ===== */
+        (function initSlider() {
+            const track = document.getElementById('sliderTrack');
+            const slides = track.querySelectorAll('.slide');
+            const dotsWrap = document.getElementById('sliderDots');
+            const counter = document.getElementById('slideCounter');
+            const btnPrev = document.getElementById('sliderPrev');
+            const btnNext = document.getElementById('sliderNext');
+            const wrap = document.getElementById('sliderWrap');
+
+            const total = slides.length;
+            let current = 0;
+            let autoplayTimer = null;
+            const AUTOPLAY_MS = 5000;
+
+            for (let i = 0; i < total; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Кадр ' + (i + 1));
+                dot.addEventListener('click', () => goTo(i, true));
+                dotsWrap.appendChild(dot);
+            }
+            const dots = dotsWrap.querySelectorAll('.slider-dot');
+
+            function render() {
+                track.style.transform = 'translateX(' + (-current * 100) + '%)';
+                dots.forEach((d, i) => d.classList.toggle('active', i === current));
+                counter.textContent = (current + 1) + ' / ' + total;
+            }
+
+            function goTo(index, userAction) {
+                current = (index + total) % total;
+                render();
+                if (userAction) restartAutoplay();
+            }
+
+            function next(userAction) { goTo(current + 1, userAction); }
+            function prev(userAction) { goTo(current - 1, userAction); }
+
+            btnNext.addEventListener('click', () => next(true));
+            btnPrev.addEventListener('click', () => prev(true));
+
+            function startAutoplay() {
+                stopAutoplay();
+                autoplayTimer = setInterval(() => next(false), AUTOPLAY_MS);
+            }
+            function stopAutoplay() {
+                if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+            }
+            function restartAutoplay() {
+                startAutoplay();
+            }
+
+            wrap.addEventListener('mouseenter', stopAutoplay);
+            wrap.addEventListener('mouseleave', startAutoplay);
+
+            let startX = 0;
+            let isDragging = false;
+            let deltaX = 0;
+
+            function onStart(x) {
+                startX = x;
+                isDragging = true;
+                deltaX = 0;
+                stopAutoplay();
+                track.style.transition = 'none';
+            }
+
+            function onMove(x) {
+                if (!isDragging) return;
+                deltaX = x - startX;
+                const offset = (-current * 100) + (deltaX / wrap.offsetWidth) * 100;
+                track.style.transform = 'translateX(' + offset + '%)';
+            }
+
+            function onEnd() {
+                if (!isDragging) return;
+                isDragging = false;
+                track.style.transition = '';
+                const threshold = wrap.offsetWidth * 0.15;
+                if (deltaX < -threshold) next(false);
+                else if (deltaX > threshold) prev(false);
+                else render();
+                startAutoplay();
+            }
+
+            wrap.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
+            wrap.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
+            wrap.addEventListener('touchend', onEnd);
+
+            wrap.addEventListener('mousedown', e => { e.preventDefault(); onStart(e.clientX); });
+            window.addEventListener('mousemove', e => onMove(e.clientX));
+            window.addEventListener('mouseup', onEnd);
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'ArrowRight') next(true);
+                if (e.key === 'ArrowLeft') prev(true);
+            });
+
+            render();
+            startAutoplay();
+        })();
     </script>
 </body>
 </html>
