@@ -563,14 +563,11 @@
             padding: 40px 0 20px 0;
         }
 
-        /* Карточка галереи — компактнее по паддингам и ширине,
-           но слайдер внутри остаётся большим */
         .screenshots-card {
             max-width: 900px !important;
             padding: clamp(20px, 3vw, 36px) !important;
         }
 
-        /* Компактнее бейдж именно в галерее */
         .screenshots-card .badge {
             margin-bottom: 16px;
             padding: 6px 16px;
@@ -817,13 +814,15 @@
             transform: translateX(6px);
         }
 
+        /* Отключённые кнопки — не реагируют на клики, ничего не всплывает */
         .platform-btn.disabled {
             cursor: not-allowed;
             opacity: 0.55;
             background: rgba(255, 255, 255, 0.03);
             border-style: dashed;
             border-color: rgba(255, 255, 255, 0.15);
-            pointer-events: auto;
+            pointer-events: none;
+            user-select: none;
         }
 
         [data-theme="light"] .platform-btn.disabled {
@@ -879,48 +878,9 @@
             color: var(--text-main);
         }
 
-        /* ===== ТОСТ ===== */
+        /* ===== ТОСТ (скрыт, не используется) ===== */
         .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            z-index: 2000;
-            padding: 16px 30px;
-            border-radius: 16px;
-            background: var(--glass-bg);
-            border: 1px solid var(--badge-border);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
-                        0 0 30px rgba(217, 119, 36, 0.25),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            white-space: nowrap;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast-icon {
-            width: 10px;
-            height: 10px;
-            background: var(--gold-gradient);
-            transform: rotate(45deg);
-            box-shadow: 0 0 12px var(--gold-primary);
-            flex-shrink: 0;
+            display: none;
         }
 
         footer {
@@ -1142,11 +1102,11 @@
             <p class="modal-subtitle">Выберите версию для вашего устройства</p>
             
             <div class="platform-list">
-                <div class="platform-btn disabled" onclick="showToast('ANDROID ПОКА НЕ ДОСТУПЕН')">
+                <div class="platform-btn disabled">
                     <span>ANDROID (APK)</span>
                     <span class="platform-tag">Пока не доступно</span>
                 </div>
-                <div class="platform-btn disabled" onclick="showToast('IOS ПОКА НЕ ДОСТУПЕН')">
+                <div class="platform-btn disabled">
                     <span>IOS (APP STORE)</span>
                     <span class="platform-tag">Пока не доступно</span>
                 </div>
@@ -1156,11 +1116,6 @@
                 </a>
             </div>
         </div>
-    </div>
-
-    <div class="toast" id="toast">
-        <span class="toast-icon"></span>
-        <span id="toastText">ПОКА НЕ ДОСТУПНО</span>
     </div>
 
     <script>
@@ -1345,19 +1300,6 @@
             if (e.target.classList.contains('modal-overlay')) {
                 closeModal();
             }
-        }
-
-        /* ===== ТОСТ ===== */
-        let toastTimer = null;
-        function showToast(text) {
-            const toast = document.getElementById('toast');
-            const toastText = document.getElementById('toastText');
-            toastText.textContent = text || 'ПОКА НЕ ДОСТУПНО';
-            toast.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2200);
         }
 
         /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
